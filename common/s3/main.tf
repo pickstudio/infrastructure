@@ -10,3 +10,13 @@ resource "aws_s3_bucket" "context" {
     Environment = "common"
   }
 }
+
+resource "aws_s3_bucket" "infrastructure" {
+  bucket = "pickstudio-infrastructure"
+  acl    = "private"
+
+  tags = {
+    Service     = "pickstudio"
+    Environment = "common"
+  }
+}

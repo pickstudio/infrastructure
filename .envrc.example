@@ -1,0 +1,21 @@
+# AWS Secrets keys
+export AWS_REGION=ap-northeast-2
+export AWS_DEFAULT_REGION=ap-northeast-2
+export AWS_ACCESS_KEY_ID=***********
+export AWS_SECRET_ACCESS_KEY=***********
+
+# AWS Resource id
+export TF_VAR_common_vpc_id="vpc-***********"
+
+export TF_VAR_common_vpc_subnet_private_an2a="subnet-***********"
+export TF_VAR_common_vpc_subnet_private_an2b="subnet-***********"
+export TF_VAR_common_vpc_subnet_private_an2c="subnet-***********"
+
+export TF_VAR_common_vpc_subnet_public_an2a="subnet-***********"
+export TF_VAR_common_vpc_subnet_public_an2b="subnet-***********"
+export TF_VAR_common_vpc_subnet_public_an2c="subnet-***********"
+
+export TF_VAR_common_vpc_security_grpup_basic="sg-***********"
+
+export TF_VAR_common_vpc_rt_public="rtb-***********"
+export TF_VAR_common_vpc_rt_private="rtb-***********"

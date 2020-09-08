@@ -15,7 +15,7 @@ locals {
   env      = "common"
   key_name = "pickstudio"
 
-  ami_id        = "ami-04f16d79f3724d28c" # Custom bastion AMI, only pickstudio
+  ami_id        = "ami-01ee1702ff85db24d" # Custom bastion AMI, only pickstudio
   instance_type = "t3.small"
   volume_size   = 20
 

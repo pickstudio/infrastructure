@@ -35,10 +35,10 @@ resource "aws_launch_template" "ec2" {
 resource "aws_autoscaling_group" "ec2" {
   name = "${var.service}-${var.role}-${var.env}"
 
-  availability_zones = var.availability_zones # vpc_zone_identifier = var.vpc_zone_identifier
-  max_size           = var.max_size
-  min_size           = var.min_size
-  desired_capacity   = var.desired_capacity
+  vpc_zone_identifier = var.vpc_zone_identifier
+  max_size            = var.max_size
+  min_size            = var.min_size
+  desired_capacity    = var.desired_capacity
 
   enabled_metrics = [
     "GroupMinSize",

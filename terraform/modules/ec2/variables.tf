@@ -26,10 +26,6 @@ variable "github_accounts" {
   type = string
 }
 
-variable "availability_zones" {
-  type = list
-}
-
 variable "vpc_zone_identifier" {
   type = list
 }

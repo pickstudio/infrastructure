@@ -1,0 +1,34 @@
+{
+  "variables": {
+    "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "vpc_id": "{{env `AWS_TARGET_VPC_ID`}}",
+    "subnet_id": "{{env `AWS_TARGET_SUBNET_ID`}}",
+    "security_group_id": "{{env `AWS_TARGET_SG_ID`}}"
+  },
+  "builders": [
+    {
+      "region": "ap-northeast-2",
+      "type": "amazon-ebs",
+      "access_key": "{{user `access_key`}}",
+      "secret_key": "{{user `secret_key`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "subnet_id": "{{user `subnet_id`}}",
+      "security_group_id": "{{user `security_group_id`}}",
+      "source_ami": "ami-00ec0bddfbdd6e1c1",
+      "instance_type": "c5.xlarge",
+      "ssh_username": "ec2-user",
+      "ami_name": "pickstudio-bastion-{{timestamp}}",
+      "ami_description": "pickstudio bastion server",
+      "ssh_interface": "public_ip",
+      "associate_public_ip_address": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "./packer/provisionings/bastion.yml",
+      "host_alias": "pickstudio_bastion"
+    }
+  ]
+}

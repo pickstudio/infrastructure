@@ -2,4 +2,7 @@
 .terraform
 *.pem
 
+secrets
+
+
 terraform.tfstate

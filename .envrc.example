@@ -1,3 +1,5 @@
+# 내용이 궁금하다면 조용진에게 DM으로 ~~
+
 # AWS Secrets keys
 export AWS_REGION=ap-northeast-2
 export AWS_DEFAULT_REGION=ap-northeast-2
@@ -19,3 +21,8 @@ export TF_VAR_common_vpc_security_grpup_basic="sg-***********"
 
 export TF_VAR_common_vpc_rt_public="rtb-***********"
 export TF_VAR_common_vpc_rt_private="rtb-***********"
+
+# Packer Resource
+export AWS_TARGET_VPC_ID=$TF_VAR_common_vpc_id
+export AWS_TARGET_SUBNET_ID=$TF_VAR_common_vpc_subnet_public_an2a
+export AWS_TARGET_SG_ID=$TF_VAR_common_vpc_security_grpup_basic

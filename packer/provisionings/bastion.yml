@@ -1,0 +1,9 @@
+---
+  - hosts: pickstudio_bastion
+    remote_user: ec2-user
+    vars:
+      aws:
+        monitoring: True
+        s3_log: False
+    roles:
+      - basic

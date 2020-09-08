@@ -1,0 +1,60 @@
+- name: 파일 오픈 관련 내용 추가 관련 내용 추가(1)
+  become: yes
+  become_user: root
+  become_method: sudo
+  shell: 'echo "DefaultLimitNPROC=65536" >> /etc/systemd/system.conf'
+
+- name: 파일 오픈 관련 내용 추가 관련 내용 추가(2)
+  become: yes
+  become_user: root
+  become_method: sudo
+  shell: 'echo "DefaultLimitNOFILE=65536" >> /etc/systemd/system.conf'
+
+- name: 기본적으로 설치되어야 하는 yum package install
+  become: yes
+  become_user: root
+  become_method: sudo
+  yum:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+      - unzip
+      - jq
+      - vim
+
+- name: install awscli version 2
+  shell: |
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+    rm -rf awscliv2.zip
+    rm -rf aws
+
+- name: node to node RSA 4096 settings
+  copy:
+    src: "secrets/{{ item.src }}"
+    dest: "/home/ec2-user/.ssh/{{ item.dest }}"
+    mode: 0600
+  with_items:
+    - { src: 'pickstudio_id_rsa', dest: 'id_rsa' }
+    - { src: 'pickstudio_id_rsa.pub', dest: 'id_rsa.pub' }
+
+- name: id_rsa.pub키 authorized_keys 등록
+  become: yes
+  become_user: root
+  become_method: sudo
+  shell: |
+    cat /home/ec2-user/.ssh/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys
+
+- name: 시작시 실행항 initialize script 복사 - init_ssh
+  become: yes
+  become_user: root
+  become_method: sudo
+  copy:
+    src: init_ssh.sh
+    dest: /root/init_ssh.sh
+    owner: root
+    group: root
+    mode: 0700
+    

@@ -1,6 +1,6 @@
 resource "aws_iam_instance_profile" "profile" {
   name = "bastion_profile"
-  role = "${aws_iam_role.role.name}"
+  role = aws_iam_role.role.name
 }
 
 resource "aws_iam_role" "role" {
@@ -45,6 +45,6 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "test-attach" {
-  role       = "${aws_iam_role.role.name}"
-  policy_arn = "${aws_iam_policy.policy.arn}"
+  role       = aws_iam_role.role.name
+  policy_arn = aws_iam_policy.policy.arn
 }

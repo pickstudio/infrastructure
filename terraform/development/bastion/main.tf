@@ -13,9 +13,9 @@ locals {
   service  = "pickstudio"
   role     = "bastion"
   env      = "common"
-  key_name = "drakejin"
+  key_name = "pickstudio"
 
-  ami_id        = "ami-087451feec8ea8919" # bastion 2020-05-25 1308
+  ami_id        = "ami-0e15f26f1a246828a" # Custom bastion AMI, only pickstudio
   instance_type = "t3.small"
   volume_size   = 20
 
@@ -23,7 +23,7 @@ locals {
   min_size         = 1
   desired_capacity = 1
 
-  github_accounts = "drake-jin,zynkn"
+  github_accounts = "drake-jin,JenYata,Jeontaeyun,pan-dugongman,sthkindacrazy"
 }
 
 module "bastion" {

@@ -1,6 +1,11 @@
 SecurityGroupName=members
+
 Member=$1
+
 MyIP=$(curl -s ifconfig.co)
+
+# example
+# ./add.sg.myip.sh ${github_nickname}
 
 SecurityGroupMeta=$(aws ec2 describe-security-groups --filter Name=group-name,Values=${SecurityGroupName} | jq -crM .)
 SecurityGroupId=$(echo "${SecurityGroupMeta}" | jq -crM '.SecurityGroups[0].GroupId')
@@ -14,8 +19,10 @@ else
     --ip-permissions "${SecurityGroupIpPermissions}" | jq -crM
 fi
 
-IngressFormat='{"FromPort":0,"ToPort":0,"IpProtocol":"tcp","IpRanges":[{"CidrIp":"${MYIP}/32","Description":"drake-jin"}],"Ipv6Ranges":[],"PrefixListIds":[],"UserIdGroupPairs":[]}'
-Ingress=$(echo $IngressFormat | jq -crM ".IpRanges[0].CidrIp = \"${MyIP}/32\"")
+IngressFormat='{"FromPort":0,"ToPort":60000,"IpProtocol":"tcp","IpRanges":[{"CidrIp":"","Description":""}],"Ipv6Ranges":[],"PrefixListIds":[],"UserIdGroupPairs":[]}'
+
+Ingress=$(echo "${IngressFormat}" | jq -crM ".IpRanges[0].Description=\"${Member}\"")
+Ingress=$(echo "${Ingress}" | jq -crM ".IpRanges[0].CidrIp = \"${MyIP}/32\"")
 
 aws ec2 authorize-security-group-ingress \
   --group-id ${SecurityGroupId} \

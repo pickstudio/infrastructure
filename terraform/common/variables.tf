@@ -2,7 +2,11 @@ variable "common_vpc_id" {
   type = string
 }
 
-variable "common_vpc_security_grpup_basic" {
+variable "common_vpc_security_group_basic" {
+  type = string
+}
+
+variable "common_vpc_security_group_members" {
   type = string
 }
 

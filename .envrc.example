@@ -17,7 +17,7 @@ export TF_VAR_common_vpc_subnet_public_an2a="subnet-***********"
 export TF_VAR_common_vpc_subnet_public_an2b="subnet-***********"
 export TF_VAR_common_vpc_subnet_public_an2c="subnet-***********"
 
-export TF_VAR_common_vpc_security_grpup_basic="sg-***********"
+export TF_VAR_common_vpc_security_group_basic="sg-***********"
 
 export TF_VAR_common_vpc_rt_public="rtb-***********"
 export TF_VAR_common_vpc_rt_private="rtb-***********"
@@ -25,4 +25,4 @@ export TF_VAR_common_vpc_rt_private="rtb-***********"
 # Packer Resource
 export AWS_TARGET_VPC_ID=$TF_VAR_common_vpc_id
 export AWS_TARGET_SUBNET_ID=$TF_VAR_common_vpc_subnet_public_an2a
-export AWS_TARGET_SG_ID=$TF_VAR_common_vpc_security_grpup_basic
+export AWS_TARGET_SG_ID=$TF_VAR_common_vpc_security_group_basic

@@ -99,6 +99,10 @@ output "sg_basic" {
   value = data.aws_security_group.basic.id
 }
 
+output "sg_members" {
+  value = data.aws_security_group.members.id
+}
+
 output "rt_public_id" {
   value = data.aws_route_table.pickstudio_public_route_table.id
 }

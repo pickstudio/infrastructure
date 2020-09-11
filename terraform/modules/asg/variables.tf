@@ -10,12 +10,24 @@ variable "volume_size" {
   type = number
 }
 
+variable "max_size" {
+  type = number
+}
+
+variable "min_size" {
+  type = number
+}
+
+variable "desired_capacity" {
+  type = number
+}
+
 variable "github_accounts" {
   type = string
 }
 
-variable "subnet_id" {
-  type = string
+variable "vpc_zone_identifier" {
+  type = list
 }
 
 variable "security_groups" {

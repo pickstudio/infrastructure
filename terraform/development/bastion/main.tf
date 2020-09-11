@@ -17,7 +17,7 @@ locals {
 
   ami_id        = "ami-01ee1702ff85db24d" # Custom bastion AMI, only pickstudio
   instance_type = "t3.small"
-  volume_size   = 20
+  volume_size   = 32
 
   max_size         = 1
   min_size         = 1
@@ -39,18 +39,11 @@ module "bastion" {
   instance_type = local.instance_type
   volume_size   = local.volume_size
 
-  max_size         = local.max_size
-  min_size         = local.min_size
-  desired_capacity = local.desired_capacity
-
-  vpc_zone_identifier = [
-    data.terraform_remote_state.common.outputs.subnet_public_an2a_id,
-    data.terraform_remote_state.common.outputs.subnet_public_an2b_id,
-    data.terraform_remote_state.common.outputs.subnet_public_an2c_id
-  ]
+  subnet_id = data.terraform_remote_state.common.outputs.subnet_public_an2a_id
 
   security_groups = [
-    data.terraform_remote_state.common.outputs.sg_basic
+    data.terraform_remote_state.common.outputs.sg_basic,
+    data.terraform_remote_state.common.outputs.sg_members,
   ]
   associate_public_ip_address = true
 

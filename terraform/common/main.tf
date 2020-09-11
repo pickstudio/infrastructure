@@ -3,7 +3,11 @@ data "aws_vpc" "pickstudio" {
 }
 
 data "aws_security_group" "basic" {
-  id = var.common_vpc_security_grpup_basic
+  id = var.common_vpc_security_group_basic
+}
+
+data "aws_security_group" "members" {
+  id = var.common_vpc_security_group_members
 }
 
 data "aws_route53_zone" "pickstudio" {

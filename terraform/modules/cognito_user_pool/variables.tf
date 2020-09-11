@@ -1,3 +1,0 @@
-variable "stage" {
-  type = string
-}

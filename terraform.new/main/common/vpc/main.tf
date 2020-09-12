@@ -1,16 +1,12 @@
 locals {
-  name = "pickstudio"
-  team = "platform"
-  vpc_tags = map(
-    "Name", local.name,
-    "Crew", local.name,
-    "Team", "platform",
-    "Resource", "VPC",
-  )
+  meta = {
+    crew     = "pickstudio",
+    team     = "platform",
+    resource = "VPC"
+  }
 
   cidr_block = "10.128.0.0/16"
 }
-
 
 resource "aws_vpc" "pickstudio" {
   cidr_block = local.cidr_block
@@ -19,9 +15,27 @@ resource "aws_vpc" "pickstudio" {
 
   enable_dns_hostnames = true
   instance_tenancy     = "default"
-  tags                 = local.vpc_tags
-
+  tags = {
+    Name     = local.meta.crew,
+    Crew     = local.meta.crew,
+    Team     = local.meta.team,
+    Resource = local.meta.resource
+  }
 }
+
+resource "aws_internet_gateway" "pickstudio" {
+  vpc_id = aws_vpc.pickstudio.id
+
+  tags = {
+    Name = "${local.meta.crew}-igw"
+  }
+}
+
+resource "aws_eip" "eip" {
+  vpc        = true
+  depends_on = [aws_internet_gateway.pickstudio]
+}
+
 
 resource "aws_security_group" "members" {
   name        = "members"

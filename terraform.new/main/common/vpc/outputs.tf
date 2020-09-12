@@ -7,7 +7,7 @@ output "vpc_arn" {
   value = aws_vpc.pickstudio.arn
 }
 
-output "vpc_cidr_block" {
+output "vpc_ipv4_cidr_block" {
   value = aws_vpc.pickstudio.cidr_block
 }
 
@@ -33,4 +33,12 @@ output "sg_basic_id" {
 
 output "sg_members_id" {
   value = aws_security_group.members.id
+}
+
+output "igw_main_id" {
+  value = aws_internet_gateway.pickstudio.id
+}
+
+output "eip_main_id" {
+  value = aws_eip.eip.id
 }

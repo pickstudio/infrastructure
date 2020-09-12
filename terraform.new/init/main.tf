@@ -1,6 +1,12 @@
-resource "aws_s3_bucket" "terraform-state" {
+resource "aws_s3_bucket" "infrastructure" {
   bucket = "pickstudio-infrastructure"
   acl    = "private"
+
+  tags = {
+    Crew    = "pickstudio"
+    Team    = "platform"
+    Service = "infrastructure"
+  }
 }
 
 resource "aws_dynamodb_table" "terraform-lock" {

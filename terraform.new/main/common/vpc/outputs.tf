@@ -38,7 +38,3 @@ output "sg_members_id" {
 output "igw_main_id" {
   value = aws_internet_gateway.pickstudio.id
 }
-
-output "eip_main_id" {
-  value = aws_eip.eip.id
-}

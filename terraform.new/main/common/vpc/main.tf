@@ -31,12 +31,6 @@ resource "aws_internet_gateway" "pickstudio" {
   }
 }
 
-resource "aws_eip" "eip" {
-  vpc        = true
-  depends_on = [aws_internet_gateway.pickstudio]
-}
-
-
 resource "aws_security_group" "members" {
   name        = "members"
   description = "access for pickstudio crews"

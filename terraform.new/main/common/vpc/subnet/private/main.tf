@@ -1,7 +1,6 @@
 locals {
   vpc = {
     id              = data.terraform_remote_state.common_vpc.outputs.vpc_id,
-    eip_main_id     = data.terraform_remote_state.common_vpc.outputs.eip_main_id
     ipv4_cidr_block = data.terraform_remote_state.common_vpc.outputs.vpc_ipv4_cidr_block,
     ipv6_cidr_block = data.terraform_remote_state.common_vpc.outputs.vpc_ipv6_cidr_block,
   }
@@ -29,7 +28,6 @@ module "private_a" {
   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
   vpc_id = local.vpc.id
-  eip_main_id = local.vpc.eip_main_id
   meta = local.meta
 }
 
@@ -42,7 +40,6 @@ module "private_b" {
   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
   vpc_id = local.vpc.id
-  eip_main_id = local.vpc.eip_main_id
   meta = local.meta
 }
 
@@ -55,7 +52,6 @@ module "private_c" {
   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
   vpc_id = local.vpc.id
-  eip_main_id = local.vpc.eip_main_id
   meta = local.meta
 }
 
@@ -68,6 +64,5 @@ module "private_d" {
   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
   vpc_id = local.vpc.id
-  eip_main_id = local.vpc.eip_main_id
   meta = local.meta
 }

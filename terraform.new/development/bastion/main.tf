@@ -19,10 +19,6 @@ locals {
   instance_type = "t3.small"
   volume_size   = 32
 
-  max_size         = 1
-  min_size         = 1
-  desired_capacity = 1
-
   github_accounts = "drake-jin,JenYata,Jeontaeyun,pan-dugongman,sthkindacrazy"
 }
 

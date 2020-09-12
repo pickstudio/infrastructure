@@ -22,6 +22,10 @@ export TF_VAR_common_vpc_security_group_basic="sg-***********"
 export TF_VAR_common_vpc_rt_public="rtb-***********"
 export TF_VAR_common_vpc_rt_private="rtb-***********"
 
+export TF_VAR_development_rds_pickstudio_dbname="********"
+export TF_VAR_development_rds_pickstudio_username="*********"
+export TF_VAR_development_rds_pickstudio_password="******************************************"
+
 # Packer Resource
 export AWS_TARGET_VPC_ID=$TF_VAR_common_vpc_id
 export AWS_TARGET_SUBNET_ID=$TF_VAR_common_vpc_subnet_public_an2a

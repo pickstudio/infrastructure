@@ -39,7 +39,7 @@ resource "aws_subnet" "private_a" {
   availability_zone = local.zone_a
 
   cidr_block = "${substr(local.vpc_cidr_block, 0, 6)}.0.0/18"
-  # ipv6_cidr_block                 = "${substr(local.vpc_ipv6_cidr_block, 0, 16)}00::/58"
+  # ipv6_cidr_block                 = "${substr(local.vpc_ipv6_cidr_block, 0, 15)}00::/58"
   # assign_ipv6_address_on_creation = true
 
   tags = {
@@ -52,7 +52,7 @@ resource "aws_subnet" "private_b" {
   availability_zone = local.zone_b
 
   cidr_block = "${substr(local.vpc_cidr_block, 0, 6)}.64.0/18"
-  # ipv6_cidr_block                 = "${substr(local.vpc_ipv6_cidr_block, 0, 16)}50::/58"
+  # ipv6_cidr_block                 = "${substr(local.vpc_ipv6_cidr_block, 0, 15)}51::/58"
   # assign_ipv6_address_on_creation = true
 
   tags = {
@@ -65,7 +65,7 @@ resource "aws_subnet" "private_c" {
   availability_zone = local.zone_c
 
   cidr_block = "${substr(local.vpc_cidr_block, 0, 6)}.128.0/18"
-  # ipv6_cidr_block                 = "${substr(local.vpc_ipv6_cidr_block, 0, 16)}a0::/58"
+  # ipv6_cidr_block                 = "${substr(local.vpc_ipv6_cidr_block, 0, 15)}a0::/58"
   # assign_ipv6_address_on_creation = true
 
   tags = {
@@ -87,3 +87,5 @@ resource "aws_route_table_association" "private_c" {
   subnet_id      = aws_subnet.private_c.id
   route_table_id = local.rt_private_id
 }
+
+

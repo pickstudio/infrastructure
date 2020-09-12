@@ -21,14 +21,6 @@ resource "aws_vpc" "pickstudio" {
 
 }
 
-resource "aws_internet_gateway" "pickstudio" {
-  vpc_id = aws_vpc.pickstudio.id
-
-  tags = {
-    Name = local.name
-  }
-}
-
 resource "aws_security_group" "members" {
   name        = "members"
   description = "access for pickstudio crews"
@@ -39,13 +31,6 @@ resource "aws_security_group" "members" {
     to_port   = 0
     protocol  = -1
     self      = true
-  }
-
-  ingress {
-    security_groups = [aws_security_group.basic.id]
-    from_port       = 0
-    to_port         = 0
-    protocol        = -1
   }
 
   egress {
@@ -67,6 +52,14 @@ resource "aws_security_group" "basic" {
     protocol  = -1
     self      = true
   }
+
+  ingress {
+    security_groups = [aws_security_group.members.id]
+    from_port       = 0
+    to_port         = 0
+    protocol        = -1
+  }
+
 
   egress {
     from_port   = 0

@@ -1,28 +1,16 @@
-data "terraform_remote_state" "common" {
-  backend = "s3"
-
-  config = {
-    bucket  = "pickstudio-terraform-state"
-    key     = "current/common"
-    region  = "ap-northeast-2"
-    encrypt = true
-  }
-}
-
 locals {
-  service  = "pickstudio"
-  env      = "development"
+  service = "pickstudio"
+  env     = "development"
 
-  volume_size   = 20
+  volume_size = 20
 
-  subnet_id = data.terraform_remote_state.common.outputs.subnet_private_an2a_id
+  subnet_id = data.terraform_remote_state.subnet_private.outputs.subnet_a_id
 
-  security_groups = [data.terraform_remote_state.common.outputs.sg_basic]
-
+  security_groups = [data.terraform_remote_state.vpc.outputs.sg_basic_id]
 }
 
 resource "aws_db_instance" "pickstudio" {
-  identifier           = "${local.service}-${local.env}"
+  identifier = "${local.service}-${local.env}"
 
   allocated_storage     = local.volume_size
   max_allocated_storage = 100
@@ -39,14 +27,14 @@ resource "aws_db_instance" "pickstudio" {
   availability_zone = "ap-northeast-2a"
 
   tags = {
-    Name = "${local.service}-${local.env}"
-    Service = local.service
+    Name       = "${local.service}-${local.env}"
+    Service    = local.service
     Environmen = local.env
   }
 
   final_snapshot_identifier = false # for test
-  skip_final_snapshot = true # for test
-  deletion_protection = true # for test
+  skip_final_snapshot       = true  # for test
+  deletion_protection       = false # for test
   enabled_cloudwatch_logs_exports = [
     "error", "general", "slowquery",
   ]
@@ -57,16 +45,15 @@ resource "aws_db_instance" "pickstudio" {
 }
 
 resource "aws_db_subnet_group" "subnets" {
-  name       = "pickstudio-subnets"
+  name = "pickstudio-subnets"
   subnet_ids = [
-    data.terraform_remote_state.common.outputs.subnet_private_an2a_id,
-    data.terraform_remote_state.common.outputs.subnet_private_an2b_id,
-    data.terraform_remote_state.common.outputs.subnet_private_an2c_id,
+    data.terraform_remote_state.subnet_private.outputs.subnet_a_id,
+    data.terraform_remote_state.subnet_private.outputs.subnet_b_id,
   ]
 
   tags = {
-    Name = "${local.service}-${local.env}"
-    Service = local.service
+    Name       = "${local.service}-${local.env}"
+    Service    = local.service
     Environmen = local.env
   }
 }

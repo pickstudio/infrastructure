@@ -21,10 +21,10 @@ resource "aws_subnet" "subnet" {
   # assign_ipv6_address_on_creation = true
 
   tags = {
-    Name       = "${var.meta.crew}_${var.meta.publish}_${var.az}",
-    Crew = var.meta.crew,
-    Team     = var.meta.team,
-    Resource = var.meta.resource,
+    Name          = "${var.meta.crew}_${var.meta.publish}_${var.az}",
+    Crew          = var.meta.crew,
+    Team          = var.meta.team,
+    Resource      = var.meta.resource,
     AvailableZone = var.az,
   }
 }

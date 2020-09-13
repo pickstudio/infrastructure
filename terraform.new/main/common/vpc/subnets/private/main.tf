@@ -13,7 +13,7 @@ locals {
   }
 
   meta = {
-    publish = "private",
+    publish  = "private",
     crew     = "pickstudio",
     team     = "platform",
     resource = "subnet"
@@ -23,46 +23,48 @@ locals {
 module "private_a" {
   source = "../../../../../modules/vpc/private_subnet"
 
-  az = local.zone.a
+  az                     = local.zone.a
   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.0.0/19"
   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
   vpc_id = local.vpc.id
-  meta = local.meta
+
+  meta   = local.meta
 }
 
 
 module "private_b" {
   source = "../../../../../modules/vpc/private_subnet"
 
-  az = local.zone.b
+  az                     = local.zone.b
   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.32.0/19"
   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
   vpc_id = local.vpc.id
-  meta = local.meta
+
+  meta   = local.meta
 }
 
+# module "private_c" {
+#   source = "../../../../../modules/vpc/private_subnet"
 
-module "private_c" {
-  source = "../../../../../modules/vpc/private_subnet"
+#   az = local.zone.c
+#   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.64.0/19"
+#   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
-  az = local.zone.c
-  subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.64.0/19"
-  # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
+#   vpc_id = local.vpc.id
+# 
+#   meta   = local.meta
+# }
 
-  vpc_id = local.vpc.id
-  meta = local.meta
-}
+# module "private_d" {
+#   source = "../../../../../modules/vpc/private_subnet"
 
+#   az = local.zone.d
+#   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.96.0/19"
+#   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
 
-module "private_d" {
-  source = "../../../../../modules/vpc/private_subnet"
-
-  az = local.zone.d
-  subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.96.0/19"
-  # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
-
-  vpc_id = local.vpc.id
-  meta = local.meta
-}
+#   vpc_id = local.vpc.id
+# 
+#   meta   = local.meta
+# }

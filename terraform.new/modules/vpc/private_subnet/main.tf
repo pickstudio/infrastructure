@@ -1,22 +1,15 @@
-# resource "aws_network_interface" "ni" {
-#   subnet_id   = aws_subnet.subnet.id
-# }
+resource "aws_eip" "eip" {
+  vpc = true
+}
 
-# resource "aws_eip" "eip" {
-#   vpc                       = true
-#   network_interface         = aws_network_interface.ni.id
-# }
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.eip.id
+  subnet_id     = aws_subnet.subnet.id
 
-# resource "aws_nat_gateway" "nat" {
-#   allocation_id = aws_eip.eip.id
-#   subnet_id     = aws_subnet.subnet.id
-# }
-
-# resource "aws_route" "nat" {
-#   destination_cidr_block = "0.0.0.0/0"
-#   route_table_id         = aws_route_table.rtb.id
-#   nat_gateway_id         = aws_nat_gateway.nat.id
-# }
+  tags = {
+    Name = "${var.meta.crew}-${var.meta.publish}-${var.az}"
+  }
+}
 
 resource "aws_route_table" "rtb" {
   vpc_id = var.vpc_id
@@ -35,12 +28,18 @@ resource "aws_subnet" "subnet" {
   # assign_ipv6_address_on_creation = true
 
   tags = {
-    Name       = "${var.meta.crew}_${var.meta.publish}_${var.az}",
-    Crew = var.meta.crew,
-    Team     = var.meta.team,
-    Resource = var.meta.resource,
+    Name          = "${var.meta.crew}_${var.meta.publish}_${var.az}",
+    Crew          = var.meta.crew,
+    Team          = var.meta.team,
+    Resource      = var.meta.resource,
     AvailableZone = var.az,
   }
+}
+
+resource "aws_route" "nat" {
+  destination_cidr_block = "0.0.0.0/0"
+  route_table_id         = aws_route_table.rtb.id
+  nat_gateway_id         = aws_nat_gateway.nat.id
 }
 
 resource "aws_route_table_association" "associate" {

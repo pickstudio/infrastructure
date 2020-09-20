@@ -1,6 +1,6 @@
 locals {
   ec2 = {
-    ami_id        = "ami-01ee1702ff85db24d" # Custom bastion AMI, only pickstudio
+    ami_id        = "ami-07c0280f5b92a96fa" # Custom bastion AMI, only pickstudio
     instance_type = "t3.small"
     volume_size   = 32
     key_name      = "pickstudio"

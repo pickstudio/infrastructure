@@ -22,50 +22,23 @@ locals {
 }
 
 module "public_a" {
-  source = "../../../../../modules/vpc/public_subnet"
+  source = "../../../../../modules/vpc/subnets/public"
 
   az                     = local.zone.a
-  subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.192.0/20"
-  # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
+  subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.0.0/23"
 
   vpc_id      = local.vpc.id
   igw_main_id = local.vpc.igw_main_id
   meta        = local.meta
 }
 
-module "public_b" {
-  source = "../../../../../modules/vpc/public_subnet"
+module "public_d" {
+  source = "../../../../../modules/vpc/subnets/public"
 
-  az                     = local.zone.b
-  subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.208.0/20"
-  # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
+  az                     = local.zone.d
+  subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.6.0/23"
 
   vpc_id      = local.vpc.id
   igw_main_id = local.vpc.igw_main_id
   meta        = local.meta
 }
-
-# module "public_c" {
-#   source = "../../../../../modules/vpc/public_subnet"
-
-#   az                     = local.zone.c
-#   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.224.0/20"
-#   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
-
-#   vpc_id      = local.vpc.id
-#   igw_main_id = local.vpc.igw_main_id
-#   meta        = local.meta
-# }
-
-# module "public_d" {
-#   source = "../../../../../modules/vpc/public_subnet"
-
-#   az                     = local.zone.d
-#   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.240.0/20"
-#   # subnet_ipv6_cidr_block = "${substr(local.vpc.ipv6_cidr_block, 0, 16)}00::/58"
-
-#   vpc_id      = local.vpc.id
-#   igw_main_id = local.vpc.igw_main_id
-#   meta        = local.meta
-# }
-

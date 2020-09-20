@@ -6,12 +6,6 @@ resource "aws_route_table" "rtb" {
   }
 }
 
-resource "aws_route" "igw" {
-  route_table_id         = aws_route_table.rtb.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = var.igw_main_id
-}
-
 resource "aws_subnet" "subnet" {
   vpc_id            = var.vpc_id
   availability_zone = var.az
@@ -27,6 +21,12 @@ resource "aws_subnet" "subnet" {
     Resource      = var.meta.resource,
     AvailableZone = var.az,
   }
+}
+
+resource "aws_route" "nat" {
+  destination_cidr_block = "0.0.0.0/0"
+  route_table_id         = aws_route_table.rtb.id
+  nat_gateway_id         = var.nat_id
 }
 
 resource "aws_route_table_association" "associate" {

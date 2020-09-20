@@ -5,7 +5,7 @@ terraform {
     region = "ap-northeast-2"
 
     bucket = "pickstudio-infrastructure"
-    key    = "terraform/v1/common/vpc/subnets/private"
+    key    = "terraform/v1/common/vpc/subnets/private_nat"
 
     encrypt = true
 
@@ -24,6 +24,18 @@ data "terraform_remote_state" "common_vpc" {
   config = {
     bucket = "pickstudio-infrastructure"
     key     = "terraform/v1/common/vpc"
+    region  = "ap-northeast-2"
+    encrypt = true
+  }
+}
+
+
+data "terraform_remote_state" "common_subnets_public" {
+  backend = "s3"
+
+  config = {
+    bucket = "pickstudio-infrastructure"
+    key     = "terraform/v1/common/vpc/subnets/public"
     region  = "ap-northeast-2"
     encrypt = true
   }

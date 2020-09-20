@@ -10,9 +10,9 @@ variable "vpc_id" {
   type = string
 }
 
-# variable "subnet_ipv6_cidr_block" {
-#   type = string
-# }
+variable "nat_id" {
+  type = string
+}
 
 variable "meta" {
   type = object({

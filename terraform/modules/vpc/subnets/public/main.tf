@@ -1,22 +1,15 @@
-resource "aws_eip" "eip" {
-  vpc = true
-}
-
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.eip.id
-  subnet_id     = aws_subnet.subnet.id
-
-  tags = {
-    Name = "${var.meta.crew}-${var.meta.publish}-${var.az}"
-  }
-}
-
 resource "aws_route_table" "rtb" {
   vpc_id = var.vpc_id
 
   tags = {
     Name = "${var.meta.crew}-${var.meta.publish}-${var.az}"
   }
+}
+
+resource "aws_route" "igw" {
+  route_table_id         = aws_route_table.rtb.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = var.igw_main_id
 }
 
 resource "aws_subnet" "subnet" {
@@ -36,10 +29,17 @@ resource "aws_subnet" "subnet" {
   }
 }
 
-resource "aws_route" "nat" {
-  destination_cidr_block = "0.0.0.0/0"
-  route_table_id         = aws_route_table.rtb.id
-  nat_gateway_id         = aws_nat_gateway.nat.id
+resource "aws_eip" "eip" {
+  vpc = true
+}
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.eip.id
+  subnet_id     = aws_subnet.subnet.id
+
+  tags = {
+    Name = "${var.meta.crew}-NAT-GW-${var.az}"
+  }
 }
 
 resource "aws_route_table_association" "associate" {

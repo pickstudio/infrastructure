@@ -47,6 +47,15 @@
   shell: |
     cat /home/ec2-user/.ssh/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys
 
+- name: install docker-compose
+  become: yes
+  become_user: root
+  become_method: sudo
+  shell: |
+    curl -L "https://github.com/docker/compose/releases/download/1.27.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+
+
 - name: 시작시 실행항 initialize script 복사 - init_ssh
   become: yes
   become_user: root

@@ -1,4 +1,3 @@
-
 variable "github_accounts" {
   type = string
 }

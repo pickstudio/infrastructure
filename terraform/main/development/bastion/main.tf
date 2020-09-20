@@ -10,7 +10,7 @@ locals {
       data.terraform_remote_state.vpc.outputs.sg_members_id,
     ]
     associate_public_ip_address = true
-    iam_instance_profile_name   = module.instance_profile.profile_name
+    iam_instance_profile_name = module.instance_profile.profile_name
   }
 
   meta = {
@@ -62,7 +62,6 @@ EOF
 
 module "bastion" {
   source = "../../../modules/ec2"
-
   github_accounts = local.github_accounts
   meta            = local.meta
   ec2             = local.ec2
@@ -71,7 +70,7 @@ module "bastion" {
 resource "aws_route53_record" "endpoint" {
   zone_id = data.terraform_remote_state.route53.outputs.route53_pickstudio_zone_id
   name    = "bastion.pickstudio.io"
-  type    = "A"
+  type    = "CNAME"
   ttl     = "60"
-  records = [module.bastion.public_ip]
+  records = [module.bastion.public_dns]
 }

@@ -45,7 +45,8 @@ resource "aws_db_instance" "pickstudio" {
 }
 
 resource "aws_db_subnet_group" "subnets" {
-  name = "pickstudio-subnets"
+  name = "${local.service}-${local.env}"
+
   subnet_ids = [
     data.terraform_remote_state.subnet_private.outputs.subnet_a_id,
     data.terraform_remote_state.subnet_private.outputs.subnet_b_id,

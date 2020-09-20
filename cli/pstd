@@ -1,0 +1,76 @@
+#!/bin/bash
+VERSION="v20200920"
+
+script=""
+options=""
+
+usage() {
+  echo "version: $VERSION"
+  echo '
+
+Description: script files
+Usage: pstd
+  -s bash script file name
+  -o parameter strings
+  [-h help]
+
+  Required: Required AWS Credential keys
+
+  case0[update pstd]:
+    pstd -s update
+
+  case1[bastion membere 등록]:
+    pstd -s add-sg-myip -o "drake-jin"
+
+  case2[bastion의 haporxy 내용변경]:
+    pstd -s refresh-haproxy -o drake-jin
+
+  case3[뭔가 dev채널에 slack message 남기기]:
+    pstd -s slack.shout -o "어쩌고 저쩌고~"
+'
+
+exit 1;
+}
+
+while getopts 's:o:h' optname; do
+  case "${optname}" in
+    h) usage;;
+    s) script=${OPTARG};;
+    o) options=${OPTARG};;
+    *) usage;;
+  esac
+done
+
+[ -z "${script}" ] && >&2 echo "Error: -s 'script' required" && usage
+
+runnable () {
+  local file="${1}"
+  local options="${2}"
+
+  echo "${file}" > ./temp
+  chmod +x ./temp
+  /bin/bash -c "./temp ${options}"
+  rm ./temp
+}
+
+if [ "${script}" == "update" ]; then
+  temp="$(aws s3 cp s3://pickstudio-infrastructure/cli/pstd -)"
+  base_path="$(which pstd)"
+  echo "${temp}" > "$base_path.new"
+  rm "$base_path"
+  mv "$base_path.new" "$base_path" | echo "updated new version"
+  chmod +x "${base_path}"
+
+elif [ "${script}" == "add-sg-myip" ]; then
+  temp="$(aws s3 cp s3://pickstudio-infrastructure/cli/scripts/add.sh.myip.sh -)"
+  runnable "${temp}" "${options}"
+
+elif [ "${script}" == "refresh-haproxy" ]; then
+  temp="$(aws s3 cp s3://pickstudio-infrastructure/cli/scripts/refresh.haproxy.sh -)"
+  runnable "${temp}" "${options}"
+
+elif [ "${script}" == "slack-call" ]; then
+  temp="$(aws s3 cp s3://pickstudio-infrastructure/cli/scripts/slack.all.sh -)"
+  runnable "${temp}" "${options}"
+
+fi

@@ -1,0 +1,5 @@
+- name: install bastion scripts files
+  become: yes
+  become_user: ec2-user
+  shell: |
+    git clone git@github.com:pickstudio/bastion.git

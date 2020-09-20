@@ -7,3 +7,5 @@
         s3_log: False
     roles:
       - basic
+      - dockercompose
+      - bastion

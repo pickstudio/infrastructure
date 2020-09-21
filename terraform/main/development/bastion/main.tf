@@ -16,7 +16,7 @@ locals {
   meta = {
     crew     = "pickstudio",
     team     = "platform",
-    resource = "ec2",
+    resource = "ecs",
     env      = "development",
     role     = "bastion",
   }

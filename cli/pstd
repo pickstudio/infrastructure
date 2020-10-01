@@ -62,7 +62,7 @@ if [ "${script}" == "update" ]; then
   chmod +x "${base_path}"
 
 elif [ "${script}" == "add-sg-myip" ]; then
-  temp="$(aws s3 cp s3://pickstudio-infrastructure/cli/scripts/add.sh.myip.sh -)"
+  temp="$(aws s3 cp s3://pickstudio-infrastructure/cli/scripts/add.sg.myip.sh -)"
   runnable "${temp}" "${options}"
 
 elif [ "${script}" == "refresh-haproxy" ]; then

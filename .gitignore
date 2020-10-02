@@ -1,11 +1,11 @@
 .idea
 .envrc
 .terraform
+
 *.pem
 
 .DS_Store
 
 secrets
-
 
 terraform.tfstate

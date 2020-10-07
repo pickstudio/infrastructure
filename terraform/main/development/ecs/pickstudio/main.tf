@@ -9,9 +9,10 @@ locals {
   }
 
   subnet_ids = [
-    data.terraform_remote_state.subnet_private_nat.outputs.subnet_a_id,
-    data.terraform_remote_state.subnet_private_nat.outputs.subnet_d_id,
+    data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
+    data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
   ]
+
   security_groups = [
     data.terraform_remote_state.vpc.outputs.sg_basic_id,
     data.terraform_remote_state.vpc.outputs.sg_members_id,

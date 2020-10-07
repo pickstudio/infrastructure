@@ -29,12 +29,12 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-data "terraform_remote_state" "subnet_private_nat" {
+data "terraform_remote_state" "subnet_public" {
   backend = "s3"
 
   config = {
     bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/common/vpc/subnets/private_nat"
+    key     = "terraform/v1/common/vpc/subnets/public"
     region  = "ap-northeast-2"
     encrypt = true
   }

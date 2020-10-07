@@ -49,7 +49,7 @@ resource "aws_db_subnet_group" "subnets" {
 
   subnet_ids = [
     data.terraform_remote_state.subnet_private.outputs.subnet_a_id,
-    data.terraform_remote_state.subnet_private.outputs.subnet_b_id,
+    data.terraform_remote_state.subnet_private.outputs.subnet_d_id,
   ]
 
   tags = {

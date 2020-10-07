@@ -1,7 +1,7 @@
 locals {
 
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
-  subnet_ids     = [
+  subnet_ids = [
     data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
     data.terraform_remote_state.subnet_public.outputs.subnet_d_id
   ]
@@ -16,7 +16,7 @@ locals {
     resource = "load balancer",
     env      = "production",
     role     = "lb",
-    service = "picka",
+    service  = "picka",
   }
 }
 

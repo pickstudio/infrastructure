@@ -1,0 +1,7 @@
+#cloud-config
+timezone: Asia/Seoul
+
+write_files:
+  - path: /etc/ecs/ecs.config
+    content: |
+      ECS_CLUSTER=${ecs_cluster_name}

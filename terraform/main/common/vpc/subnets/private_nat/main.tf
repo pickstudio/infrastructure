@@ -18,10 +18,11 @@ locals {
     team     = "platform",
     resource = "subnet"
   }
-  nat_id = {
-    a = data.terraform_remote_state.common_subnets_public.outputs.subnet_a_nat_id,
-    d = data.terraform_remote_state.common_subnets_public.outputs.subnet_d_nat_id,
-  }
+
+  # nat_id = {
+  #   a = data.terraform_remote_state.common_subnets_public.outputs.subnet_a_nat_id,
+  #   d = data.terraform_remote_state.common_subnets_public.outputs.subnet_d_nat_id,
+  # }
 }
 
 module "private_a" {
@@ -31,9 +32,9 @@ module "private_a" {
   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.32.0/21"
 
   vpc_id = local.vpc.id
-  nat_id = local.nat_id.a
+  # nat_id = local.nat_id.a
 
-  meta   = local.meta
+  meta = local.meta
 }
 
 
@@ -44,7 +45,7 @@ module "private_d" {
   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.56.0/21"
 
   vpc_id = local.vpc.id
-  nat_id = local.nat_id.d
+  # nat_id = local.nat_id.d
 
-  meta   = local.meta
+  meta = local.meta
 }

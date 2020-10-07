@@ -27,7 +27,6 @@ module "private_a" {
   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.96.0/23"
 
   vpc_id = local.vpc.id
-
   meta   = local.meta
 }
 
@@ -39,6 +38,5 @@ module "private_d" {
   subnet_ipv4_cidr_block = "${substr(local.vpc.ipv4_cidr_block, 0, 6)}.102.0/23"
 
   vpc_id = local.vpc.id
-
   meta   = local.meta
 }

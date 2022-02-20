@@ -2,10 +2,15 @@
 .envrc
 .terraform
 
-*.pem
 
 .DS_Store
 
 secrets
 
 terraform.tfstate
+
+
+# secrets
+*_rsa
+*.pem
+*.pub

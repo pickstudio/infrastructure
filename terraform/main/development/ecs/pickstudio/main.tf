@@ -1,11 +1,10 @@
 locals {
   meta = {
-    service  = "pickstudio"
-    crew     = "pickstudio",
-    team     = "platform",
-    resource = "ecs",
-    env      = "development",
-    role     = "cluster",
+    service    = "pickstudio"
+    crew       = "pickstudio",
+    team       = "platform",
+    env        = "development",
+    repository = "pickstudio/infrastructure",
   }
 
   subnet_ids = [
@@ -18,44 +17,53 @@ locals {
     data.terraform_remote_state.vpc.outputs.sg_members_id,
   ]
 
-  cluster_name = "${local.meta.service}-${local.meta.role}-${local.meta.resource}-${local.meta.env}"
-}
-
-data "aws_ssm_parameter" "ami_ecs" {
-  name            = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
-  with_decryption = true
+  cluster_name = "${local.meta.service}-${local.meta.env}"
 }
 
 module "asg" {
   source = "../../../../modules/ecs_asg"
 
   cluster_name = local.cluster_name
+  purpose = "ecs-cluster"
   meta         = local.meta
 
   subnet_ids      = local.subnet_ids
   security_groups = local.security_groups
-  ami_id          = data.aws_ssm_parameter.ami_ecs.value
+  ami_id          = "ami-0257d109ee81daf0e" # AWS AMI pickstudio-ecs-1645372848 built by packer
 
-  scale_min     = 0
-  scale_desired = 0
-  scale_max     = 0
-  instance_type = "t3.medium"
-  volume_size   = 50
+  scale_min     = 1
+  scale_desired = 1
+  scale_max     = 1
+
+  instance_type = "m6i.large"
+  volume_size   = 100
 
   key_name = "pickstudio"
 }
 
 resource "aws_ecs_capacity_provider" "ecs_cap_provider" {
-  name = local.cluster_name
+  name = aws_ecs_cluster.ecs.name
 
   auto_scaling_group_provider {
     auto_scaling_group_arn = module.asg.asg_arn
-    //    managed_termination_protection = "ENABLED"
   }
+  depends_on = [
+    module.asg
+  ]
 }
+
 
 resource "aws_ecs_cluster" "ecs" {
   name               = local.cluster_name
-  capacity_providers = [aws_ecs_capacity_provider.ecs_cap_provider.name]
-  tags               = local.meta
+  tags               = {
+    Service = local.meta.service,
+    Crew = local.meta.crew,
+    Team = local.meta.team,
+    Environment = local.meta.env,
+    Repository = local.meta.repository,
+  }
+
+  depends_on = [
+    module.asg
+  ]
 }

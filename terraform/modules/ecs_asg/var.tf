@@ -3,10 +3,13 @@ variable "meta" {
     service  = string
     crew     = string
     team     = string
-    resource = string
     env      = string
-    role     = string
+    repository = string
   })
+}
+
+variable "purpose" {
+  type = string
 }
 
 variable "security_groups" {

@@ -29,7 +29,7 @@ resource "aws_launch_template" "lt" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_type           = "gp2"
+      volume_type           = "gp3"
       volume_size           = var.volume_size
       delete_on_termination = true
     }
@@ -48,9 +48,8 @@ resource "aws_launch_template" "lt" {
   }
 
   network_interfaces {
-    # associate_public_ip_address = true
-    associate_public_ip_address = false
     security_groups             = var.security_groups
+    associate_public_ip_address = true # debugging 하면서 볼려고..
     delete_on_termination       = true
   }
 
@@ -60,7 +59,7 @@ resource "aws_launch_template" "lt" {
 }
 
 resource "aws_autoscaling_group" "asg" {
-  name = var.cluster_name
+  name = "${var.purpose}-${var.cluster_name}"
 
   min_size         = var.scale_min
   desired_capacity = var.scale_desired
@@ -73,8 +72,8 @@ resource "aws_autoscaling_group" "asg" {
     version = "$Latest"
   }
 
-  health_check_type         = ""
-  health_check_grace_period = 10
+  health_check_type         = "EC2"
+  health_check_grace_period = 300
   default_cooldown          = 300
   termination_policies = [
     "OldestLaunchConfiguration",
@@ -92,58 +91,41 @@ resource "aws_autoscaling_group" "asg" {
     "GroupTotalInstances",
   ]
 
-  tags = [
-    {
-      key                 = "Name"
-      value               = var.cluster_name
-      propagate_at_launch = true
-    },
-    {
-      key                 = "tf_managed"
-      value               = "true"
-      propagate_at_launch = true
-    },
-    {
-      key                 = "service"
-      value               = var.meta.service
-      propagate_at_launch = true
-    },
-    {
-      key                 = "crew"
-      value               = var.meta.crew
-      propagate_at_launch = true
-    },
-    {
-      key                 = "team"
-      value               = var.meta.team
-      propagate_at_launch = true
-    },
-    {
-      key                 = "resource"
-      value               = var.meta.resource
-      propagate_at_launch = true
-    },
-    {
-      key                 = "env"
-      value               = var.meta.env
-      propagate_at_launch = true
-    },
-    {
-      key                 = "role"
-      value               = var.meta.role
-      propagate_at_launch = true
-    },
-    {
-      key                 = "cluster"
-      value               = var.cluster_name
-      propagate_at_launch = true
-    },
-    {
-      key                 = "role"
-      value               = var.meta.role
-      propagate_at_launch = true
-    }
-  ]
+  tag {
+    key                 = "Name"
+    value               = "${var.purpose}-${var.cluster_name}"
 
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Service"
+    value               = var.meta.service
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Crew"
+    value               = var.meta.crew
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Team"
+    value               = var.meta.team
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Environment"
+    value               = var.meta.env
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Cluster"
+    value               = var.cluster_name
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Repository"
+    value               = var.meta.repository
+    propagate_at_launch = true
+  }
   depends_on = [aws_launch_template.lt]
 }

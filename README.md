@@ -10,8 +10,9 @@ terraform code about pickstudio cloud infrastructure
 - `direnv` cli [Download Link](https://direnv.net/)
 - `ansible` cli [Download Link](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-macos)
     ``` bash
+  pyenv 
     pip uninstall ansible-base
-    pip install ansible@5.3.0
+    pip install ansible==5.3.0
     ```
 
 # getting start
@@ -28,6 +29,7 @@ $ terraform plan
 $ terraform apply
 # Do yes or No
 ```
+
 
 
 

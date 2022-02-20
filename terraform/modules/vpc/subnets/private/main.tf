@@ -2,7 +2,12 @@ resource "aws_route_table" "rtb" {
   vpc_id = var.vpc_id
 
   tags = {
-    Name = "${var.meta.crew}-${var.meta.publish}-${var.az}"
+    Name = "${var.meta.crew}-${var.meta.publish}-${var.az}",
+    Crew          = var.meta.crew,
+    Team          = var.meta.team,
+    Resource      = var.meta.resource,
+    Repository    = var.meta.repository,
+    AvailableZone = var.az,
   }
 }
 
@@ -19,6 +24,7 @@ resource "aws_subnet" "subnet" {
     Crew          = var.meta.crew,
     Team          = var.meta.team,
     Resource      = var.meta.resource,
+    Repository    = var.meta.repository,
     AvailableZone = var.az,
   }
 }

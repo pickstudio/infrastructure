@@ -2,6 +2,7 @@ locals {
   meta = {
     crew     = "pickstudio",
     team     = "platform",
+    repository = "pickstudio/infrastructure"
     resource = "VPC"
   }
 
@@ -19,7 +20,8 @@ resource "aws_vpc" "pickstudio" {
     Name     = local.meta.crew,
     Crew     = local.meta.crew,
     Team     = local.meta.team,
-    Resource = local.meta.resource
+    Resource = local.meta.resource,
+    Repository = local.meta.repository,
   }
 }
 

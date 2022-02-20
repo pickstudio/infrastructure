@@ -20,5 +20,6 @@ variable "meta" {
     crew     = string
     team     = string
     resource = string
+    repository = string
   })
 }

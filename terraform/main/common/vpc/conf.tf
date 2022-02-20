@@ -1,5 +1,5 @@
 terraform {
-  required_version = "= 0.13.2"
+  required_version = "1.1.6"
 
   backend "s3" {
     region = "ap-northeast-2"
@@ -10,9 +10,15 @@ terraform {
 
     dynamodb_table = "pickstudio-terraform-lock"
   }
+  required_providers {
+    aws = {
+      version = "4.2.0"
+      source  = "hashicorp/aws"
+    }
+  }
 }
 
 provider "aws" {
-  version = "3.5.0"
+  allowed_account_ids = ["755991664675"]
   region  = "ap-northeast-2"
 }

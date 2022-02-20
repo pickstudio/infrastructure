@@ -17,7 +17,8 @@ locals {
     publish  = "public",
     crew     = "pickstudio",
     team     = "platform",
-    resource = "subnet"
+    resource = "subnet",
+    repository = "pickstudio/infrastructure"
   }
 }
 

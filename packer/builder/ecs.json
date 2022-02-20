@@ -1,0 +1,35 @@
+{
+  "builders": [
+    {
+      "access_key": "{{user `access_key`}}",
+      "ami_description": "pickstudio ecs server",
+      "ami_name": "pickstudio-ecs-{{timestamp}}",
+      "associate_public_ip_address": true,
+      "instance_type": "c5.xlarge",
+      "region": "ap-northeast-2",
+      "secret_key": "{{user `secret_key`}}",
+      "security_group_id": "{{user `security_group_id`}}",
+      "source_ami": "ami-073a0375a611be5fa",
+      "ssh_interface": "public_ip",
+      "ssh_username": "ec2-user",
+      "subnet_id": "{{user `subnet_id`}}",
+      "type": "amazon-ebs",
+      "vpc_id": "{{user `vpc_id`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "host_alias": "pickstudio_ecs",
+      "playbook_file": "./packer/provisionings/ecs.yml",
+      "type": "ansible"
+    }
+  ],
+  "variables": {
+    "access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "security_group_id": "sg-0e2af638e10fe1a09",
+    "subnet_id": "subnet-0579f0c0da98e0d19",
+    "vpc_id": "vpc-09adb720f8676cd1e"
+  }
+}
+

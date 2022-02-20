@@ -1,15 +1,3 @@
-- name: 파일 오픈 관련 내용 추가 관련 내용 추가(1)
-  become: yes
-  become_user: root
-  become_method: sudo
-  shell: 'echo "DefaultLimitNPROC=65536" >> /etc/systemd/system.conf'
-
-- name: 파일 오픈 관련 내용 추가 관련 내용 추가(2)
-  become: yes
-  become_user: root
-  become_method: sudo
-  shell: 'echo "DefaultLimitNOFILE=65536" >> /etc/systemd/system.conf'
-
 - name: 기본적으로 설치되어야 하는 yum package install
   become: yes
   become_user: root
@@ -23,14 +11,6 @@
       - jq
       - vim
       - git
-
-- name: install awscli version 2
-  shell: |
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    sudo ./aws/install
-    rm -rf awscliv2.zip
-    rm -rf aws
 
 - name: node to node RSA 4096 settings
   copy:
@@ -48,15 +28,6 @@
   shell: |
     cat /home/ec2-user/.ssh/id_rsa.pub >> /home/ec2-user/.ssh/authorized_keys
 
-- name: install docker-compose
-  become: yes
-  become_user: root
-  become_method: sudo
-  shell: |
-    curl -L "https://github.com/docker/compose/releases/download/1.27.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
-
-
 - name: 시작시 실행항 initialize script 복사 - init_ssh
   become: yes
   become_user: root
@@ -67,4 +38,3 @@
     owner: root
     group: root
     mode: 0700
-    

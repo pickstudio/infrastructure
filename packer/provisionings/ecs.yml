@@ -1,11 +1,9 @@
 ---
-  - hosts: pickstudio_bastion
+  - hosts: pickstudio_ecs
     remote_user: ec2-user
     vars:
       aws:
         monitoring: True
         s3_log: False
     roles:
-      - kernel
       - basic
-      - dockercompose

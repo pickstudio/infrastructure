@@ -22,7 +22,7 @@ locals {
 }
 
 data "aws_ssm_parameter" "ami_ecs" {
-  name            = "/aws/service/ecs/optimized-ami/amazon-linux-2/amzn2-ami-ecs-hvm-2.0.20200902-x86_64-ebs/image_id"
+  name            = "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended"
   with_decryption = true
 }
 

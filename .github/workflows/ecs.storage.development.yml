@@ -29,7 +29,8 @@ jobs:
       - name: load task-definition.json
         run: |
           HELLO=(`cat ./ecs/storage/task-definition.json`)
-          echo "::set-out name=task_definition::${HELLO}"
+          echo "::set-output name=task_definition::${HELLO}"
+          echo $HELLO
         id: load_task_definition_json
 
       - name: Deploy Amazon ECS task definition

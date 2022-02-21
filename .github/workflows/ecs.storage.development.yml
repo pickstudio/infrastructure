@@ -26,17 +26,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      - name: load task-definition.json
-        run: |
-          HELLO=(`cat ./ecs/storage/task-definition.json`)
-          echo "::set-output name=task_definition::${HELLO}"
-          echo $HELLO
-        id: load_task_definition_json
+#      - name: load task-definition.json
+#        run: |
+#          HELLO=(`cat ./ecs/storage/task-definition.json`)
+#          echo "::set-output name=task_definition::${HELLO}"
+#          echo $HELLO
+#        id: load_task_definition_json
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.load_task_definition_json.outputs.task_definition }}
+          task-definition: ./ecs/storage/task-definition.json
           service: storage
           cluster: pickstudio-development
           wait-for-service-stability: true

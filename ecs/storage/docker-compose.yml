@@ -1,0 +1,105 @@
+version: '3.7'
+
+services:
+  buddy-golf:
+    container_name: golf
+    image: mysql:8.0.2
+
+
+  search-server:
+    container_name: search-server
+    image: daangn/search-server:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - GIT_ACCESS_TOKEN=${ORG_GITHUB_READ_TOKEN}
+    entrypoint: "/search-server start"
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+      - "5000:5000"
+    volumes:
+      - ./log:/tmp/search-server
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SECURITY_TOKEN=${AWS_SECURITY_TOKEN}
+      - AWS_SESSION_EXPIRATION=${AWS_SESSION_EXPIRATION}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+
+      - AWS_REGION=${AWS_REGION}
+      - ENV=${ENV}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - DD_TRACE_AGENT_PORT=${DD_TRACE_AGENT_PORT}
+      - DD_AGENT_HOST=${DD_AGENT_HOST}
+
+  datadog:
+    image: datadog/agent:latest
+    hostname: dd-agent
+    container_name: dd-agent
+    ports:
+      - "${DD_TRACE_AGENT_PORT}:${DD_TRACE_AGENT_PORT}"
+    environment:
+      - DD_PYTHON_VERSION=3
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_APM_ENABLED=true
+      - DD_LOGS_ENABLED=true
+      - DD_APM_RECEIVER_PORT=${DD_TRACE_AGENT_PORT}
+      - DD_APM_NON_LOCAL_TRAFFIC=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+
+  filebeat:
+    container_name: filebeat
+    image: elastic/filebeat:7.8.1
+    user: root
+    volumes:
+      - ./log:/usr/share/filebeat/logs
+      - ./docker/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    environment:
+      - KAFKA_HOSTS=kafka:9092
+      - TARGET_FILEPATH=/usr/share/filebeat/logs/*.log
+  #      - KAFKA_HOSTS=b-3.towneers-events.kafka.alpha.data.krmt.io:9092,b-1.towneers-events.kafka.alpha.data.krmt.io:9092,b-2.towneers-events.kafka.alpha.data.krmt.io:9092
+
+  # ============================================================= zookeeper cluster ========================================================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    hostname: zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper:2888:3888
+  # ============================================================= kafka cluster ========================================================================
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+  # ============================================================= kafka-kafdrop ========================================================================
+  kafka-kafdrop:
+    image: obsidiandynamics/kafdrop
+    hostname: kafka-kafdrop
+    container_name: kafka-kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - kafka

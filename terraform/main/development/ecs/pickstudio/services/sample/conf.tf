@@ -5,7 +5,7 @@ terraform {
     region = "ap-northeast-2"
 
     bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/common/vpc/subnets/private"
+    key     = "terraform/v1/development/ecs/pickstudio/services/sample"
     encrypt = true
 
     dynamodb_table = "pickstudio-terraform-lock"
@@ -23,7 +23,7 @@ provider "aws" {
   region              = "ap-northeast-2"
 }
 
-data "terraform_remote_state" "common_vpc" {
+data "terraform_remote_state" "vpc" {
   backend = "s3"
 
   config = {
@@ -34,16 +34,31 @@ data "terraform_remote_state" "common_vpc" {
   }
 }
 
+data "terraform_remote_state" "subnet_public" {
+  backend = "s3"
+
+  config = {
+    bucket  = "pickstudio-infrastructure"
+    key     = "terraform/v1/common/vpc/subnets/public"
+    region  = "ap-northeast-2"
+    encrypt = true
+  }
+}
+
+
+data "terraform_remote_state" "development_ecs_pickstudio" {
+  backend = "s3"
+
+  config = {
+    bucket  = "pickstudio-infrastructure"
+    key     = "terraform/v1/development/ecs/pickstudio"
+    region  = "ap-northeast-2"
+    encrypt = true
+  }
+}
+
 data "aws_availability_zone" "a" {
   name = "ap-northeast-2a"
-}
-
-data "aws_availability_zone" "b" {
-  name = "ap-northeast-2b"
-}
-
-data "aws_availability_zone" "c" {
-  name = "ap-northeast-2c"
 }
 
 data "aws_availability_zone" "d" {

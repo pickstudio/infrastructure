@@ -1,0 +1,19 @@
+{
+  "family": "sample",
+  "containerDefinitions": [
+    {
+      "name": "sample",
+      "image": "yeasy/simple-web:latest",
+      "cpu": 1,
+      "networkMode": "bridge",
+      "memory": "256",
+      "portMappings": [
+        {
+          "hostPort": 0,
+          "protocol": "tcp",
+          "containerPort": 80
+        }
+      ]
+    }
+  ]
+}

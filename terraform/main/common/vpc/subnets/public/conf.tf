@@ -20,14 +20,14 @@ terraform {
 
 provider "aws" {
   allowed_account_ids = ["755991664675"]
-  region  = "ap-northeast-2"
+  region              = "ap-northeast-2"
 }
 
 data "terraform_remote_state" "common_vpc" {
   backend = "s3"
 
   config = {
-    bucket = "pickstudio-infrastructure"
+    bucket  = "pickstudio-infrastructure"
     key     = "terraform/v1/common/vpc"
     region  = "ap-northeast-2"
     encrypt = true

@@ -1,8 +1,8 @@
 locals {
   meta = {
-    crew     = "pickstudio",
-    team     = "platform",
-    resource = "VPC"
+    crew       = "pickstudio",
+    team       = "platform",
+    resource   = "VPC"
     repository = "pickstudio/infrastructure"
   }
 
@@ -10,16 +10,16 @@ locals {
 }
 
 resource "aws_vpc" "pickstudio" {
-  cidr_block = local.cidr_block
+  cidr_block                       = local.cidr_block
   assign_generated_ipv6_cidr_block = true
-  enable_dns_hostnames = true
-  instance_tenancy     = "default"
+  enable_dns_hostnames             = true
+  instance_tenancy                 = "default"
 
   tags = {
-    Name     = local.meta.crew,
-    Crew     = local.meta.crew,
-    Team     = local.meta.team,
-    Resource = local.meta.resource,
+    Name       = local.meta.crew,
+    Crew       = local.meta.crew,
+    Team       = local.meta.team,
+    Resource   = local.meta.resource,
     Repository = local.meta.repository,
   }
 }
@@ -38,10 +38,10 @@ resource "aws_security_group" "members" {
   vpc_id      = aws_vpc.pickstudio.id
 
   tags = {
-    Name     = "pickstudio-members",
-    Crew     = local.meta.crew,
-    Team     = local.meta.team,
-    Resource = "security_group",
+    Name       = "pickstudio-members",
+    Crew       = local.meta.crew,
+    Team       = local.meta.team,
+    Resource   = "security_group",
     Repository = local.meta.repository,
   }
 
@@ -66,10 +66,10 @@ resource "aws_security_group" "basic" {
   vpc_id      = aws_vpc.pickstudio.id
 
   tags = {
-    Name     = "pickstudio-basic",
-    Crew     = local.meta.crew,
-    Team     = local.meta.team,
-    Resource = "security_group",
+    Name       = "pickstudio-basic",
+    Crew       = local.meta.crew,
+    Team       = local.meta.team,
+    Resource   = "security_group",
     Repository = local.meta.repository,
   }
 
@@ -111,10 +111,10 @@ resource "aws_security_group" "public-for-test" {
   vpc_id      = aws_vpc.pickstudio.id
 
   tags = {
-    Name     = "pickstudio-public-for-test",
-    Crew     = local.meta.crew,
-    Team     = local.meta.team,
-    Resource = "security_group",
+    Name       = "pickstudio-public-for-test",
+    Crew       = local.meta.crew,
+    Team       = local.meta.team,
+    Resource   = "security_group",
     Repository = local.meta.repository,
   }
 
@@ -123,18 +123,18 @@ resource "aws_security_group" "public-for-test" {
       aws_security_group.members.id,
       aws_security_group.basic.id,
     ]
-    self = true
-    from_port       = 0
-    to_port         = 0
-    protocol        = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+    protocol  = -1
   }
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    self      = false
+    self        = false
   }
 
   egress {
@@ -151,19 +151,19 @@ resource "aws_security_group" "public-for-serving" {
   vpc_id      = aws_vpc.pickstudio.id
 
   tags = {
-    Name     = "pickstudio-public-for-serving",
-    Crew     = local.meta.crew,
-    Team     = local.meta.team,
-    Resource = "security_group",
+    Name       = "pickstudio-public-for-serving",
+    Crew       = local.meta.crew,
+    Team       = local.meta.team,
+    Resource   = "security_group",
     Repository = local.meta.repository,
   }
 
   ingress {
-    from_port = 10000
-    to_port   = 60000
-    protocol  = "tcp"
+    from_port   = 10000
+    to_port     = 60000
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    self      = false
+    self        = false
   }
 
   egress {

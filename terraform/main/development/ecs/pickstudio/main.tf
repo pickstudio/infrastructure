@@ -29,7 +29,7 @@ module "asg" {
   source = "../../../../modules/ecs_asg"
 
   cluster_name = local.cluster_name
-  purpose = "ecs-cluster"
+  purpose      = "ecs-cluster"
   meta         = local.meta
 
   subnet_ids      = local.subnet_ids
@@ -59,13 +59,13 @@ resource "aws_ecs_capacity_provider" "ecs_cap_provider" {
 
 
 resource "aws_ecs_cluster" "ecs" {
-  name               = local.cluster_name
-  tags               = {
-    Service = local.meta.service,
-    Crew = local.meta.crew,
-    Team = local.meta.team,
+  name = local.cluster_name
+  tags = {
+    Service     = local.meta.service,
+    Crew        = local.meta.crew,
+    Team        = local.meta.team,
     Environment = local.meta.env,
-    Repository = local.meta.repository,
+    Repository  = local.meta.repository,
   }
 
   depends_on = [
@@ -83,9 +83,9 @@ resource "aws_lb" "lb" {
   enable_deletion_protection = true
 
   tags = {
-    Name = "lb-${local.cluster_name}"
+    Name        = "lb-${local.cluster_name}"
     Environment = local.meta.env
-    Team = local.meta.team
-    Crew = local.meta.crew
+    Team        = local.meta.team
+    Crew        = local.meta.crew
   }
 }

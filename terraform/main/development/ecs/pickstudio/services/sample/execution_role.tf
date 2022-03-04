@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "execution_assume_role" {
 }
 
 resource "aws_iam_role" "execution" {
-  name = "ecs-execution-role-storage-flight"
+  name               = "ecs-execution-role-storage-flight"
   assume_role_policy = data.aws_iam_policy_document.execution_assume_role.json
 }
 
@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "execution" {
 }
 
 resource "aws_iam_role_policy" "execution" {
-  name = "execution-policy-storage-flight"
-  role = aws_iam_role.execution.id
+  name   = "execution-policy-storage-flight"
+  role   = aws_iam_role.execution.id
   policy = data.aws_iam_policy_document.execution.json
 }

@@ -14,10 +14,10 @@ locals {
   }
 
   meta = {
-    publish  = "public",
-    crew     = "pickstudio",
-    team     = "platform",
-    resource = "subnet",
+    publish    = "public",
+    crew       = "pickstudio",
+    team       = "platform",
+    resource   = "subnet",
     repository = "pickstudio/infrastructure"
   }
 }

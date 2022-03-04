@@ -2,9 +2,9 @@ resource "aws_s3_bucket" "bucket" {
   bucket = "pickstudio-infrastructure"
 
   tags = {
-    Crew    = "pickstudio"
-    Team    = "platform"
-    Service = "infrastructure"
+    Crew       = "pickstudio"
+    Team       = "platform"
+    Service    = "infrastructure"
     Repository = "pickstudio/infrastructure"
   }
 }

@@ -26,12 +26,38 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
+#    - name: Login to Amazon ECR
+#        id: login-ecr
+#        uses: aws-actions/amazon-ecr-login@v1
+#
+#    - name: Build, tag, and push image to Amazon ECR
+#      id: build-image
+#      env:
+#        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#        ECR_REPOSITORY: my-ecr-repo
+#        IMAGE_TAG: ${{ github.sha }}
+#      run: |
+#        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+#        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+#        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+
 #      - name: load task-definition.json
 #        run: |
 #          HELLO=(`cat ./ecs/storage/task-definition.json`)
 #          echo "::set-output name=task_definition::${HELLO}"
 #          echo $HELLO
 #        id: load_task_definition_json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./ecs/storage/task-definition.json
+          container-name: storage
+          image: redis:6.2.6
+          # ${{ steps.build-image.outputs.image }}
+
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

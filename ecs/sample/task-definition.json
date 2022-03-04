@@ -1,0 +1,17 @@
+{
+  "family": "storage",
+  "containerDefinitions": [
+    {
+      "name": "birdiebuddy-redis",
+      "image": "redis:6.2.6",
+      "cpu": 1,
+      "memory": "512",
+      "portMappings": [
+        {
+          "containerPort": 6379,
+          "hostPort": 36379
+        }
+      ]
+    }
+  ]
+}

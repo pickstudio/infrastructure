@@ -1,14 +1,16 @@
-name: ecs.storage.development deploy
+name: ecs.sample.development deploy
 
 env:
-  ENV: alpha
+  ENV: development
   AWS_REGION: ap-northeast-2
+  ECS_CLUSTER_NAME: pickstudio-development
+  ECS_SERVICE_NAME: sample
 
 on:
   push:
     paths:
-      - 'ecs/storage/**'
-      - '.github/workflows/ecs.storage.development.yml'
+      - 'ecs/sample/**'
+      - '.github/workflows/ecs.sample.development.yml'
 
 jobs:
   deploy:
@@ -45,8 +47,8 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ./ecs/storage/task-definition.json
-          container-name: birdiebuddy-redis
+          task-definition: ./ecs/sample/task-definition.json
+          container-name: sample
           image: yeasy/simple-web:latest
           # ${{ steps.build-image.outputs.image }}
 
@@ -54,6 +56,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ./ecs/storage/task-definition.json
-          service: storage
-          cluster: pickstudio-development
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true

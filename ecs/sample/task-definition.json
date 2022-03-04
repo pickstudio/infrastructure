@@ -1,15 +1,17 @@
 {
-  "family": "storage",
+  "family": "sample",
   "containerDefinitions": [
     {
-      "name": "birdiebuddy-redis",
-      "image": "redis:6.2.6",
+      "name": "sample",
+      "image": "yeasy/simple-web:latest",
       "cpu": 1,
-      "memory": "512",
+      "networkMode": "bridge",
+      "memory": "256",
       "portMappings": [
         {
-          "containerPort": 6379,
-          "hostPort": 36379
+          "hostPort": 0,
+          "protocol": "tcp",
+          "containerPort": 80
         }
       ]
     }

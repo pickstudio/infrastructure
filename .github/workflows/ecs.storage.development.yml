@@ -54,8 +54,8 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ./ecs/storage/task-definition.json
-          container-name: storage
-          image: redis:6.2.6
+          container-name: birdiebuddy-redis
+          image: yeasy/simple-web:latest
           # ${{ steps.build-image.outputs.image }}
 
 

@@ -35,6 +35,14 @@ output "sg_members_id" {
   value = aws_security_group.members.id
 }
 
+output "sg_public_for_test_id" {
+  value = aws_security_group.public-for-test.id
+}
+
+output "sg_public_for_serving_id" {
+  value = aws_security_group.public-for-serving.id
+}
+
 output "igw_main_id" {
   value = aws_internet_gateway.pickstudio.id
 }

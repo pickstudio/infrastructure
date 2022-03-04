@@ -145,3 +145,32 @@ resource "aws_security_group" "public-for-test" {
   }
 }
 
+resource "aws_security_group" "public-for-serving" {
+  name        = "public-for-serving"
+  description = "public-for-serving"
+  vpc_id      = aws_vpc.pickstudio.id
+
+  tags = {
+    Name     = "pickstudio-public-for-serving",
+    Crew     = local.meta.crew,
+    Team     = local.meta.team,
+    Resource = "security_group",
+    Repository = local.meta.repository,
+  }
+
+  ingress {
+    from_port = 10000
+    to_port   = 60000
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    self      = false
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+

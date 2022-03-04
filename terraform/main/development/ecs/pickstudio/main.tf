@@ -9,12 +9,17 @@ locals {
 
   subnet_ids = [
     data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
-    data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
+    data.terraform_remote_state.subnet_public.outputs.subnet_d_id,
   ]
 
   security_groups = [
     data.terraform_remote_state.vpc.outputs.sg_basic_id,
     data.terraform_remote_state.vpc.outputs.sg_members_id,
+  ]
+
+  public_security_groups = [
+    data.terraform_remote_state.vpc.outputs.sg_basic_id,
+    data.terraform_remote_state.vpc.outputs.sg_public_for_serving_id,
   ]
 
   cluster_name = "${local.meta.service}-${local.meta.env}"
@@ -29,13 +34,13 @@ module "asg" {
 
   subnet_ids      = local.subnet_ids
   security_groups = local.security_groups
-  ami_id          = "ami-0257d109ee81daf0e" # AWS AMI pickstudio-ecs-1645372848 built by packer
+  ami_id          = "ami-0257d109ee81daf0e" # AWS AMI pickstudio-ecs-1645372848 built by `./packer`
 
-  scale_min     = 1
-  scale_desired = 1
-  scale_max     = 1
+  scale_min     = 2
+  scale_desired = 2
+  scale_max     = 2
 
-  instance_type = "m6i.large"
+  instance_type = "t3a.medium"
   volume_size   = 100
 
   key_name = "pickstudio"
@@ -66,4 +71,21 @@ resource "aws_ecs_cluster" "ecs" {
   depends_on = [
     module.asg
   ]
+}
+
+resource "aws_lb" "lb" {
+  name               = "lb-${local.cluster_name}"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = local.public_security_groups
+  subnets            = local.subnet_ids
+
+  enable_deletion_protection = true
+
+  tags = {
+    Name = "lb-${local.cluster_name}"
+    Environment = local.meta.env
+    Team = local.meta.team
+    Crew = local.meta.crew
+  }
 }

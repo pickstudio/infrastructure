@@ -1,7 +1,3 @@
-variable "github_accounts" {
-  type = string
-}
-
 variable "ec2" {
   type = object({
     ami_id = string

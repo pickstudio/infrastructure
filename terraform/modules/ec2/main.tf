@@ -3,7 +3,7 @@ resource "aws_instance" "ec2" {
   instance_type = var.ec2.instance_type
 
   tags = {
-    Name = "${var.meta.role}-${var.meta.env}"
+    Name = "${var.meta.role}-${var.meta.resource}-${var.meta.env}"
     Role = var.meta.role
     Environment = var.meta.env
     Resource = var.meta.resource
@@ -11,7 +11,6 @@ resource "aws_instance" "ec2" {
     Crew = var.meta.crew
   }
 
-  user_data     = base64encode(data.template_file.ec2.rendered)
   key_name = var.ec2.key_name
 
   iam_instance_profile = var.ec2.iam_instance_profile_name
@@ -26,13 +25,5 @@ resource "aws_instance" "ec2" {
     volume_type           = "gp2"
     volume_size           = var.ec2.volume_size
     delete_on_termination = true
-  }
-}
-
-data "template_file" "ec2" {
-  template = "${file("${path.module}/files/setup.sh")}"
-
-  vars = {
-    github_accounts = var.github_accounts
   }
 }

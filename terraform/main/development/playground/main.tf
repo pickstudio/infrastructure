@@ -1,8 +1,8 @@
 locals {
   ec2 = {
-    ami_id        = "ami-07c0280f5b92a96fa" # Custom bastion AMI, only pickstudio
-    instance_type = "t3.small"
-    volume_size   = 32
+    ami_id        = "ami-0257d109ee81daf0e" # AWS AMI pickstudio-ecs-1645372848 built by `./packer`
+    instance_type = "t3a.medium"
+    volume_size   = 64
     key_name      = "pickstudio"
     subnet_id     = data.terraform_remote_state.subnet_public.outputs.subnet_a_id
     security_groups = [
@@ -16,12 +16,10 @@ locals {
   meta = {
     crew     = "pickstudio",
     team     = "platform",
-    resource = "ecs",
+    resource = "containers",
     env      = "development",
-    role     = "bastion",
+    role     = "playground",
   }
-
-  github_accounts = "drake-jin,JenYata,Jeontaeyun,pan-dugongman,sthkindacrazy"
 }
 
 module "instance_profile" {
@@ -60,17 +58,16 @@ EOF
 EOF
 }
 
-module "bastion" {
+module "playground_ec2" {
   source = "../../../modules/ec2"
-  github_accounts = local.github_accounts
   meta            = local.meta
   ec2             = local.ec2
 }
 
 resource "aws_route53_record" "endpoint" {
   zone_id = data.terraform_remote_state.route53.outputs.route53_pickstudio_zone_id
-  name    = "bastion.pickstudio.io"
+  name    = "playground.development.pickstudio.io"
   type    = "CNAME"
   ttl     = "60"
-  records = [module.bastion.public_dns]
+  records = [module.playground_ec2.public_dns]
 }

@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "role" {
-  name = "${local.meta.team}_${local.meta.service}_${local.meta.env}-role"
+  name = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
 
   assume_role_policy = <<EOF
 {
@@ -20,8 +20,8 @@ EOF
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "${local.meta.team}_${local.meta.service}_${local.meta.env}-policy"
-  description = "${local.meta.team}_${local.meta.service}_${local.meta.env}-policy"
+  name        = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+  description = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
 
   policy = <<EOF
 {

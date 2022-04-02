@@ -1,10 +1,10 @@
 locals {
   meta = {
     crew       = "pickstudio",
-    team       = "platform",
-    service    = "sample"
+    team       = "buddystock",
+    service    = "buddystock_rest"
     env        = "development",
-    repository = "docker/sample",
+    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_rest:latest",
   }
 
   subnet_ids = [
@@ -23,11 +23,9 @@ locals {
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port = 55080
+  service_port = 40001
 
-  container_name = "sample"
   container_port = 80
-
   desired_count = 1
 }
 
@@ -44,23 +42,25 @@ resource "aws_lb_listener" "listener" {
 }
 
 resource "aws_lb_target_group" "tg" {
-  name        = "${local.meta.team}_${local.meta.service}_${local.meta.env}-tg"
   target_type = "instance"
   port        = local.container_port
   protocol    = "HTTP"
   vpc_id      = local.vpc_id
 }
 
-resource "aws_ecs_service" "sample" {
+resource "aws_ecs_service" "service" {
   name                = local.meta.service
   cluster             = local.ecs_cluster_id
   desired_count       = local.desired_count
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent = 100
   task_definition     = aws_ecs_task_definition.td.arn
   scheduling_strategy = "REPLICA"
 
+
   load_balancer {
     target_group_arn = aws_lb_target_group.tg.arn
-    container_name   = local.container_name
+    container_name   = local.meta.service
     container_port   = local.container_port
   }
 
@@ -80,20 +80,15 @@ resource "aws_ecs_service" "sample" {
   depends_on = [aws_ecs_task_definition.td]
 }
 
-data "aws_iam_role" "service_linked_role" {
-  name = "AWSServiceRoleForECS"
-}
-
-
 resource "aws_ecs_task_definition" "td" {
-  family                = "${local.meta.team}_${local.meta.service}_${local.meta.env}-td"
+  family                = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
   container_definitions = <<TASK_DEFINITION
 [
   {
     "cpu": 1,
-    "image": "yeasy/simple-web:latest",
+    "image": "${local.meta.repository}",
     "memory": 256,
-    "name": "${local.container_name}",
+    "name": "${local.meta.service}",
     "networkMode": "bridge",
     "portMappings": [
       {

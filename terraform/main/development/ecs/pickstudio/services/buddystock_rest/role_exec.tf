@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "execution_assume_role" {
 }
 
 resource "aws_iam_role" "execution" {
-  name               = "ecs-execution-role-storage-flight"
+  name               = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
   assume_role_policy = data.aws_iam_policy_document.execution_assume_role.json
 }
 
@@ -44,6 +44,7 @@ data "aws_iam_policy_document" "execution" {
       "kms:Decrypt"
     ]
     resources = [
+      "*"
     ]
   }
 
@@ -54,12 +55,13 @@ data "aws_iam_policy_document" "execution" {
     ]
 
     resources = [
+      "*"
     ]
   }
 }
 
 resource "aws_iam_role_policy" "execution" {
-  name   = "execution-policy-storage-flight"
+  name   = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
   role   = aws_iam_role.execution.id
   policy = data.aws_iam_policy_document.execution.json
 }

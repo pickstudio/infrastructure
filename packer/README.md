@@ -7,5 +7,4 @@
 packer build ./builder/ecs.pkr.hcl
 packer fmt ./builder/ecs.pkr.hcl
 
-ssh -i 
 ```

@@ -9,7 +9,7 @@ VScode ssh모드로 실행시키기 위한 준비
 ./scripts/downloadSecrets.sh
 ```
 
-2. AWS 에서 security 방화벽 open
+2. AWS 에서 security 방화벽 [open](https://ap-northeast-2.console.aws.amazon.com/ec2/v2/home?region=ap-northeast-2#SecurityGroup:groupId=sg-09428512ecb5d19c6)
     1. AWS Console에 접근한다.
     2. security group에서 `member` 라는 security group name을 찾는다.
     3. SSH 로 22번을 열고 `My IP` 항목을 선택해야한다.
@@ -30,3 +30,21 @@ ssh -i /Users/drakejin/Workspace/pickstudio/infrastructure/pickstudio.pem ec2-us
 - ![2images](../docs/_images/vscode_ssh_2.png)
 - ![3images](../docs/_images/vscode_ssh_3.png)
 - ![4images](../docs/_images/vscode_ssh_4.png)
+
+
+# WIKI
+### 처음 initialize한 ec2셋업 - github이용하게 하기
+
+``` bash
+cat ~/.ssh/id_rsa.pub
+# 이 내용을 github / profile /seetings / SSH & GPG Key 관리에서 등록해주기  pickstudio.pem 이라 하면 됨.
+```
+
+### 처음 initialize한 ec2셋업 - docker-compose install
+``` bash
+# 최신 docker compose를 해당 링크에서 받을 수 있다고 한다.
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+
+# 권한 부여
+sudo chmod +x /usr/local/bin/docker-compose
+```

@@ -25,9 +25,8 @@ VScode ssh모드로 실행시키기 위한 준비
 # example
 ssh -i /Users/drakejin/Workspace/pickstudio/infrastructure/pickstudio.pem ec2-user@playground.development.pickstudio.io
 ```
-
-[이미지 자료 참고]
-![images](./docs/_images/vscode_ssh_1.png)
-![images](./docs/_images/vscode_ssh_2.png)
-![images](./docs/_images/vscode_ssh_3.png)
-![images](./docs/_images/vscode_ssh_4.png)
+### [이미지 자료 참고]
+- ![1images](../docs/_images/vscode_ssh_1.png)
+- ![2images](../docs/_images/vscode_ssh_2.png)
+- ![3images](../docs/_images/vscode_ssh_3.png)
+- ![4images](../docs/_images/vscode_ssh_4.png)

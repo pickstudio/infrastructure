@@ -52,11 +52,13 @@ resource "aws_lb_target_group" "tg" {
 }
 
 resource "aws_ecs_service" "sample" {
-  name                = local.meta.service
-  cluster             = local.ecs_cluster_id
-  desired_count       = local.desired_count
-  task_definition     = aws_ecs_task_definition.td.arn
-  scheduling_strategy = "REPLICA"
+  name                               = local.meta.service
+  cluster                            = local.ecs_cluster_id
+  desired_count                      = local.desired_count
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent         = 100
+  task_definition                    = aws_ecs_task_definition.td.arn
+  scheduling_strategy                = "REPLICA"
 
   load_balancer {
     target_group_arn = aws_lb_target_group.tg.arn

@@ -36,9 +36,9 @@ module "asg" {
   security_groups = local.security_groups
   ami_id          = "ami-0257d109ee81daf0e" # AWS AMI pickstudio-ecs-1645372848 built by `./packer`
 
-  scale_min     = 2
-  scale_desired = 2
-  scale_max     = 2
+  scale_min     = 1
+  scale_desired = 1
+  scale_max     = 1
 
   instance_type = "t3a.medium"
   volume_size   = 100

@@ -1,10 +1,10 @@
 locals {
   meta = {
     crew       = "pickstudio",
-    team       = "buddystock",
-    service    = "buddystock_rest"
+    team       = "pickme",
+    service    = "pickme_match"
     env        = "development",
-    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_rest:latest",
+    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/pickme-next-api:efdbb3317f0bccb20e12488e76ac57785c34fb5e",
   }
 
   subnet_ids = [
@@ -23,7 +23,7 @@ locals {
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port = 40001
+  service_port = 10080
 
   container_port = 80
   desired_count  = 1
@@ -89,6 +89,14 @@ resource "aws_ecs_task_definition" "td" {
     "image": "${local.meta.repository}",
     "memory": 256,
     "name": "${local.meta.service}",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/pickme-match-api",
+        "awslogs-region": "ap-northeast-2",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
     "networkMode": "bridge",
     "portMappings": [
       {

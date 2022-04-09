@@ -10,7 +10,7 @@ terraform code about pickstudio cloud infrastructure
 - `direnv` cli [Download Link](https://direnv.net/)
 - `ansible` cli [Download Link](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-macos)
     ``` bash
-  pyenv 
+  pyenv
     pip uninstall ansible-base
     pip install ansible==5.3.0
     ```
@@ -30,7 +30,9 @@ $ terraform apply
 # Do yes or No
 ```
 
-
+# service host information
+- buddystock_rest => http://development.pickstudio.io:40001
+- buddystock_youtube => http://development.pickstudio.io:40002
 
 
 

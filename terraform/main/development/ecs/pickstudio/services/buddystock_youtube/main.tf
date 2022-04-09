@@ -2,9 +2,9 @@ locals {
   meta = {
     crew       = "pickstudio",
     team       = "buddystock",
-    service    = "buddystock_rest"
+    service    = "buddystock_youtube"
     env        = "development",
-    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_rest:latest",
+    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_youtube:latest",
   }
 
   subnet_ids = [
@@ -23,9 +23,9 @@ locals {
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port = 40001
+  service_port = 40002
 
-  container_port = 8080
+  container_port = 8081
   desired_count  = 1
 }
 

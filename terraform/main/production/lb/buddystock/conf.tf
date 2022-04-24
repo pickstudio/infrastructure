@@ -5,7 +5,7 @@ terraform {
     region = "ap-northeast-2"
 
     bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/development/ecs/pickstudio/services/buddystock_youtube"
+    key     = "terraform/v1/production/lb/buddystock"
     encrypt = true
 
     dynamodb_table = "pickstudio-terraform-lock"
@@ -45,30 +45,6 @@ data "terraform_remote_state" "subnet_public" {
   }
 }
 
-
-data "terraform_remote_state" "development_ecs_pickstudio" {
-  backend = "s3"
-
-  config = {
-    bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/development/ecs/pickstudio"
-    region  = "ap-northeast-2"
-    encrypt = true
-  }
-}
-
-data "terraform_remote_state" "production_lb_buddystock" {
-  backend = "s3"
-
-  config = {
-    bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/production/lb/buddystock"
-    region  = "ap-northeast-2"
-    encrypt = true
-  }
-}
-
-
 data "aws_availability_zone" "a" {
   name = "ap-northeast-2a"
 }
@@ -76,3 +52,4 @@ data "aws_availability_zone" "a" {
 data "aws_availability_zone" "d" {
   name = "ap-northeast-2d"
 }
+

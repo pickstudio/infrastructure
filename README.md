@@ -31,8 +31,14 @@ $ terraform apply
 ```
 
 # service host information
-- buddystock_rest => http://development.pickstudio.io:40001
-- buddystock_youtube => http://development.pickstudio.io:40002
+- buddystock_rest
+  - https://rest.buddystock.kr
+  - [x_ http://development.pickstudio.io:40001
+  - [x_ https://development.pickstudio.io:40431
+- buddystock_youtube
+  - https://buddystock.kr
+  - [x_ http://development.pickstudio.io:40002
+  - [x_ https://development.pickstudio.io:40432
 
 
 

@@ -19,42 +19,65 @@ locals {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
+
   ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
   service_port = 40002
+  service_tls_port = 40432
 
   container_port = 8081
   desired_count  = 1
 }
 
-
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = local.lb_id
-  port              = local.service_port
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.tg.arn
-  }
-}
-
-resource "aws_lb_target_group" "tg" {
-  target_type = "instance"
-  port        = local.container_port
-  protocol    = "HTTP"
-  vpc_id      = local.vpc_id
-
-  health_check {
-    protocol = "HTTP"
-    path = "/health"
-    healthy_threshold = 5
-    unhealthy_threshold = 2
-    interval = 30
-  }
-}
+#resource "aws_lb_listener" "listener" {
+#  load_balancer_arn = local.lb_id
+#  port              = local.service_port
+#  protocol          = "HTTP"
+#
+#  default_action {
+#    type = "redirect"
+#    redirect {
+#      port        = local.service_tls_port
+#      protocol    = "HTTPS"
+#      status_code = "HTTP_301"
+#    }
+#  }
+#}
+#
+#resource "aws_lb_target_group" "tg" {
+#  target_type = "instance"
+#  port        = local.container_port
+#  protocol    = "HTTP"
+#  vpc_id      = local.vpc_id
+#
+#  health_check {
+#    protocol = "HTTP"
+#    path = "/health"
+#    healthy_threshold = 5
+#    unhealthy_threshold = 2
+#    interval = 30
+#  }
+#}
+#
+#data "aws_acm_certificate" "acm" {
+#  domain   = "*.pickstudio.io"
+#  statuses = ["ISSUED"]
+#}
+#
+#resource "aws_lb_listener" "listener_tls" {
+#  load_balancer_arn = local.lb_id
+#  port              = local.service_tls_port
+#  protocol          = "HTTPS"
+#  ssl_policy        = "ELBSecurityPolicy-2016-08"
+#  certificate_arn   = data.aws_acm_certificate.acm.arn
+#
+#  default_action {
+#    type             = "forward"
+#    target_group_arn = aws_lb_target_group.tg.arn
+#  }
+#}
 
 resource "aws_ecs_service" "service" {
   name                               = local.meta.service
@@ -67,7 +90,7 @@ resource "aws_ecs_service" "service" {
 
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.tg.arn
+    target_group_arn = aws_lb_target_group.buddystock_tg.arn
     container_name   = local.meta.service
     container_port   = local.container_port
   }
@@ -104,10 +127,22 @@ resource "aws_ecs_task_definition" "td" {
         "protocol": "tcp",
         "containerPort": ${local.container_port}
       }
-    ]
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group" : "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}",
+        "awslogs-region": "ap-northeast-2",
+        "awslogs-stream-prefix": "ecs"
+      }
+    }
   }
 ]
 TASK_DEFINITION
 }
 
+resource "aws_cloudwatch_log_group" "log_group" {
+  name = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
 
+  tags = local.meta
+}

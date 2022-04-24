@@ -19,21 +19,44 @@ locals {
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
   lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
+
   ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
   service_port = 40001
+  service_tls_port = 40431
 
   container_port = 8080
   desired_count  = 1
 }
 
-
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = local.lb_id
   port              = local.service_port
   protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = local.service_tls_port
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+data "aws_acm_certificate" "acm" {
+  domain   = "*.pickstudio.io"
+  statuses = ["ISSUED"]
+}
+
+resource "aws_lb_listener" "listener_tls" {
+  load_balancer_arn = local.lb_id
+  port              = local.service_tls_port
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.acm.arn
 
   default_action {
     type             = "forward"
@@ -104,10 +127,22 @@ resource "aws_ecs_task_definition" "td" {
         "protocol": "tcp",
         "containerPort": ${local.container_port}
       }
-    ]
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group" : "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}",
+        "awslogs-region": "ap-northeast-2",
+        "awslogs-stream-prefix": "ecs"
+      }
+    }
   }
 ]
 TASK_DEFINITION
 }
 
+resource "aws_cloudwatch_log_group" "log_group" {
+  name = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
 
+  tags = local.meta
+}

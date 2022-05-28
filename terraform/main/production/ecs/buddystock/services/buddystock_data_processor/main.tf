@@ -2,9 +2,9 @@ locals {
   meta = {
     crew       = "pickstudio",
     team       = "buddystock",
-    service    = "buddystock_rest"
-    env        = "development",
-    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_rest:latest",
+    service    = "buddystock_data_processor"
+    env        = "production",
+    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_data_processor:latest",
   }
 
   subnet_ids = [
@@ -18,16 +18,16 @@ locals {
   ]
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
+  lb_id          = data.terraform_remote_state.production_lb_buddystock.outputs.lb_id
 
-  ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
+  ecs_cluster_id = data.terraform_remote_state.production_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port = 40001
-  service_tls_port = 40431
+  service_port = 40003
+  service_tls_port = 40433
 
-  container_port = 8080
+  container_port = 5000
   desired_count  = 1
 }
 
@@ -46,6 +46,21 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
+resource "aws_lb_target_group" "tg" {
+  target_type = "instance"
+  port        = local.container_port
+  protocol    = "HTTP"
+  vpc_id      = local.vpc_id
+
+  health_check {
+    protocol = "HTTP"
+    path = "/"
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    interval = 30
+  }
+}
+
 data "aws_acm_certificate" "acm" {
   domain   = "*.pickstudio.io"
   statuses = ["ISSUED"]
@@ -61,21 +76,6 @@ resource "aws_lb_listener" "listener_tls" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg.arn
-  }
-}
-
-resource "aws_lb_target_group" "tg" {
-  target_type = "instance"
-  port        = local.container_port
-  protocol    = "HTTP"
-  vpc_id      = local.vpc_id
-
-  health_check {
-    protocol = "HTTP"
-    path = "/health"
-    healthy_threshold = 5
-    unhealthy_threshold = 2
-    interval = 30
   }
 }
 

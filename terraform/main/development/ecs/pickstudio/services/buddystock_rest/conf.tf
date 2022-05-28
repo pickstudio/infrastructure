@@ -57,17 +57,6 @@ data "terraform_remote_state" "development_ecs_pickstudio" {
   }
 }
 
-data "terraform_remote_state" "production_lb_buddystock" {
-  backend = "s3"
-
-  config = {
-    bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/production/lb/buddystock"
-    region  = "ap-northeast-2"
-    encrypt = true
-  }
-}
-
 data "aws_availability_zone" "a" {
   name = "ap-northeast-2a"
 }

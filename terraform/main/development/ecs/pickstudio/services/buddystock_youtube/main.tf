@@ -31,53 +31,53 @@ locals {
   desired_count  = 1
 }
 
-#resource "aws_lb_listener" "listener" {
-#  load_balancer_arn = local.lb_id
-#  port              = local.service_port
-#  protocol          = "HTTP"
-#
-#  default_action {
-#    type = "redirect"
-#    redirect {
-#      port        = local.service_tls_port
-#      protocol    = "HTTPS"
-#      status_code = "HTTP_301"
-#    }
-#  }
-#}
-#
-#resource "aws_lb_target_group" "tg" {
-#  target_type = "instance"
-#  port        = local.container_port
-#  protocol    = "HTTP"
-#  vpc_id      = local.vpc_id
-#
-#  health_check {
-#    protocol = "HTTP"
-#    path = "/health"
-#    healthy_threshold = 5
-#    unhealthy_threshold = 2
-#    interval = 30
-#  }
-#}
-#
-#data "aws_acm_certificate" "acm" {
-#  domain   = "*.pickstudio.io"
-#  statuses = ["ISSUED"]
-#}
-#
-#resource "aws_lb_listener" "listener_tls" {
-#  load_balancer_arn = local.lb_id
-#  port              = local.service_tls_port
-#  protocol          = "HTTPS"
-#  ssl_policy        = "ELBSecurityPolicy-2016-08"
-#  certificate_arn   = data.aws_acm_certificate.acm.arn
-#
-#  default_action {
-#    type             = "forward"
-#    target_group_arn = aws_lb_target_group.tg.arn
-#  }
-#}
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = local.lb_id
+  port              = local.service_port
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      port        = local.service_tls_port
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_target_group" "tg" {
+  target_type = "instance"
+  port        = local.container_port
+  protocol    = "HTTP"
+  vpc_id      = local.vpc_id
+
+  health_check {
+    protocol = "HTTP"
+    path = "/health"
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    interval = 30
+  }
+}
+
+data "aws_acm_certificate" "acm" {
+  domain   = "*.pickstudio.io"
+  statuses = ["ISSUED"]
+}
+
+resource "aws_lb_listener" "listener_tls" {
+  load_balancer_arn = local.lb_id
+  port              = local.service_tls_port
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.acm.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg.arn
+  }
+}
 
 resource "aws_ecs_service" "service" {
   name                               = local.meta.service
@@ -90,7 +90,7 @@ resource "aws_ecs_service" "service" {
 
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.buddystock_tg.arn
+    target_group_arn = aws_lb_target_group.tg.arn
     container_name   = local.meta.service
     container_port   = local.container_port
   }

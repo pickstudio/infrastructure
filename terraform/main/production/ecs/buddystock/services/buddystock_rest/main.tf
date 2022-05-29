@@ -47,7 +47,7 @@ resource "aws_lb_listener" "listener" {
 }
 
 data "aws_acm_certificate" "acm" {
-  domain   = "*.pickstudio.io"
+  domain   = "buddystock.kr"
   statuses = ["ISSUED"]
 }
 

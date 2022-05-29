@@ -62,7 +62,7 @@ resource "aws_lb_target_group" "tg" {
 }
 
 data "aws_acm_certificate" "acm" {
-  domain   = "*.pickstudio.io"
+  domain   = "buddystock.kr"
   statuses = ["ISSUED"]
 }
 

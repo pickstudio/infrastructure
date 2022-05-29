@@ -72,20 +72,3 @@ resource "aws_ecs_cluster" "ecs" {
     module.asg
   ]
 }
-
-resource "aws_lb" "lb" {
-  name               = "lb-${local.cluster_name}"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = local.public_security_groups
-  subnets            = local.subnet_ids
-
-  enable_deletion_protection = true
-
-  tags = {
-    Name        = "lb-${local.cluster_name}"
-    Environment = local.meta.env
-    Team        = local.meta.team
-    Crew        = local.meta.crew
-  }
-}

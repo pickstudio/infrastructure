@@ -1,9 +1,12 @@
 locals {
   volume_size = 200
 
-  subnet_id = data.terraform_remote_state.subnet_private.outputs.subnet_a_id
+  subnet_id = data.terraform_remote_state.subnet_public.outputs.subnet_a_id
 
-  security_groups = [data.terraform_remote_state.vpc.outputs.sg_basic_id]
+  security_groups = [
+    data.terraform_remote_state.vpc.outputs.sg_basic_id,
+    data.terraform_remote_state.vpc.outputs.sg_members_id,
+  ]
 
   production_rds_buddystock_dbname                 = var.production_rds_buddystock_dbname
   production_rds_buddystock_username              = var.production_rds_buddystock_username
@@ -21,13 +24,15 @@ locals {
 resource "aws_db_instance" "rds" {
   identifier = "${local.meta.team}-${local.meta.service_mysql}-${local.meta.env}"
 
+  publicly_accessible = true
+
   allocated_storage     = local.volume_size
   max_allocated_storage = 600
   storage_type          = "gp2"
   engine                = "mysql"
   engine_version        = "8.0.28"
   instance_class        = "db.t3.micro"
-  db_name                  = local.production_rds_buddystock_dbname
+  db_name               = local.production_rds_buddystock_dbname
   username              = local.production_rds_buddystock_username
   password              = local.production_rds_buddystock_password
 
@@ -58,8 +63,8 @@ resource "aws_db_subnet_group" "subnets" {
   name = "${local.meta.team}-${local.meta.service_mysql}-${local.meta.env}"
 
   subnet_ids = [
-    data.terraform_remote_state.subnet_private.outputs.subnet_a_id,
-    data.terraform_remote_state.subnet_private.outputs.subnet_d_id,
+    data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
+    data.terraform_remote_state.subnet_public.outputs.subnet_d_id,
   ]
 
   tags = {

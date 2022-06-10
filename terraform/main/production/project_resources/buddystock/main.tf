@@ -8,16 +8,21 @@ locals {
     data.terraform_remote_state.vpc.outputs.sg_members_id,
   ]
 
-  production_rds_buddystock_dbname                 = var.production_rds_buddystock_dbname
-  production_rds_buddystock_username              = var.production_rds_buddystock_username
-  production_rds_buddystock_password              = var.production_rds_buddystock_password
+  public_subnets = [
+    data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
+    data.terraform_remote_state.subnet_public.outputs.subnet_d_id,
+  ]
+
+  production_rds_buddystock_dbname   = var.production_rds_buddystock_dbname
+  production_rds_buddystock_username = var.production_rds_buddystock_username
+  production_rds_buddystock_password = var.production_rds_buddystock_password
 
   meta = {
-    team    = "buddystock",
+    team          = "buddystock",
     service_redis = "redis",
     service_mysql = "mysql",
     service_queue = "queue",
-    env     = "production",
+    env           = "production",
   }
 }
 
@@ -62,10 +67,7 @@ resource "aws_db_instance" "rds" {
 resource "aws_db_subnet_group" "subnets" {
   name = "${local.meta.team}-${local.meta.service_mysql}-${local.meta.env}"
 
-  subnet_ids = [
-    data.terraform_remote_state.subnet_public.outputs.subnet_a_id,
-    data.terraform_remote_state.subnet_public.outputs.subnet_d_id,
-  ]
+  subnet_ids = local.public_subnets
 
   tags = {
     Name        = "${local.meta.team}-${local.meta.service_mysql}-${local.meta.env}"

@@ -29,11 +29,11 @@ resource "aws_launch_template" "lt" {
     device_name = "/dev/xvda"
 
     ebs {
-      volume_type           = "gp3"
       volume_size           = var.volume_size
       delete_on_termination = true
     }
   }
+
 
   lifecycle {
     create_before_destroy = true

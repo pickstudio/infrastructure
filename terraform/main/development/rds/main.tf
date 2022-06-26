@@ -6,12 +6,16 @@ locals {
 
   subnet_id = data.terraform_remote_state.subnet_private.outputs.subnet_a_id
 
-  security_groups = [data.terraform_remote_state.vpc.outputs.sg_basic_id]
+  security_groups = [
+    data.terraform_remote_state.vpc.outputs.sg_basic_id,
+    data.terraform_remote_state.vpc.outputs.sg_member_id,
+  ]
 }
 
 resource "aws_db_instance" "pickstudio" {
   identifier = "${local.service}-${local.env}"
 
+  publicly_accessible = true
   allocated_storage     = local.volume_size
   max_allocated_storage = 100
   storage_type          = "gp2"

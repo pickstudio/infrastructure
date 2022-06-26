@@ -32,13 +32,13 @@ $ terraform apply
 
 # service host information
 - buddystock_rest
-  - https://rest.buddystock.kr
-  - [x_ http://development.pickstudio.io:40001
-  - [x_ https://development.pickstudio.io:40431
+    - development: https://development.pickstudio.io:40431
+    - production: https://buddystock.kr:40431
 - buddystock_youtube
-  - https://buddystock.kr
-  - [x_ http://development.pickstudio.io:40002
-  - [x_ https://development.pickstudio.io:40432
-
+    - development: https://development.pickstudio.io:40432
+    - production: https://buddystock.kr:40432
+- buddystock_data_processor
+    - development: https://development.pickstudio.io:40433
+    - production: https://buddystock.kr:40433
 
 

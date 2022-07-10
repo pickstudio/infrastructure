@@ -130,7 +130,7 @@ resource "aws_ecs_task_definition" "td" {
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group" : "/ecs/development/pickme/pickme_match",
+        "awslogs-group" : "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}",
         "awslogs-region": "ap-northeast-2",
         "awslogs-stream-prefix": "ecs"
       }

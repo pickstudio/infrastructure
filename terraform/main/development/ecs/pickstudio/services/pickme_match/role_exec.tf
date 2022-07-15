@@ -1,20 +1,15 @@
-data "aws_iam_policy_document" "execution_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
+resource "aws_iam_role_policy" "exec" {
+  name   = "${local.meta.team}_${local.meta.service}_${local.meta.env}_exec"
+  role   = aws_iam_role.exec.id
+  policy = data.aws_iam_policy_document.exec.json
 }
 
-resource "aws_iam_role" "execution" {
-  name               = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
-  assume_role_policy = data.aws_iam_policy_document.execution_assume_role.json
+resource "aws_iam_role" "exec" {
+  name               = "${local.meta.team}_${local.meta.service}_${local.meta.env}_exec"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
 }
 
-data "aws_iam_policy_document" "execution" {
+data "aws_iam_policy_document" "exec" {
   statement {
     actions = [
       "ecr:GetAuthorizationToken",
@@ -43,6 +38,7 @@ data "aws_iam_policy_document" "execution" {
     actions = [
       "kms:Decrypt"
     ]
+
     resources = [
       "*"
     ]
@@ -58,10 +54,4 @@ data "aws_iam_policy_document" "execution" {
       "*"
     ]
   }
-}
-
-resource "aws_iam_role_policy" "execution" {
-  name   = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
-  role   = aws_iam_role.execution.id
-  policy = data.aws_iam_policy_document.execution.json
 }

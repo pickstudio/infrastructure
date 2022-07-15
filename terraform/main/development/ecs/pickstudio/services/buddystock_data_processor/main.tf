@@ -18,13 +18,13 @@ locals {
   ]
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
+  lb_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
 
   ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port = 40003
+  service_port     = 40003
   service_tls_port = 40433
 
   container_port = 5000
@@ -44,6 +44,8 @@ resource "aws_lb_listener" "listener" {
       status_code = "HTTP_301"
     }
   }
+
+  tags = local.meta
 }
 
 resource "aws_lb_target_group" "tg" {
@@ -53,11 +55,11 @@ resource "aws_lb_target_group" "tg" {
   vpc_id      = local.vpc_id
 
   health_check {
-    protocol = "HTTP"
-    path = "/"
-    healthy_threshold = 5
+    protocol            = "HTTP"
+    path                = "/"
+    healthy_threshold   = 5
     unhealthy_threshold = 2
-    interval = 30
+    interval            = 30
   }
 }
 
@@ -77,6 +79,7 @@ resource "aws_lb_listener" "listener_tls" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg.arn
   }
+  tags = local.meta
 }
 
 resource "aws_ecs_service" "service" {
@@ -104,28 +107,65 @@ resource "aws_ecs_service" "service" {
     type  = "binpack"
     field = "memory"
   }
-  lifecycle {
-    ignore_changes = [task_definition]
-  }
+  #  lifecycle {
+  #    ignore_changes = [task_definition]
+  #  }
 
   depends_on = [aws_ecs_task_definition.td]
 }
 
+data "aws_iam_role" "exec" {
+  name = "ecsTaskExecutionRole"
+}
+
 resource "aws_ecs_task_definition" "td" {
-  family                = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+  family             = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+  task_role_arn      = aws_iam_role.task.arn
+  execution_role_arn = aws_iam_role.exec.arn
+  tags               = local.meta
+
   container_definitions = <<TASK_DEFINITION
 [
   {
     "cpu": 1,
     "image": "${local.meta.repository}",
-    "memory": 256,
+    "memory": 1024,
     "name": "${local.meta.service}",
+    "entryPoint": ["/app/http_server"],
     "networkMode": "bridge",
     "portMappings": [
       {
         "hostPort": 0,
         "protocol": "tcp",
         "containerPort": ${local.container_port}
+      }
+    ],
+    "environment": [
+      {
+        "name": "ENV",
+        "value": "development"
+      },
+      {
+        "name": "HTTP_SERVER_PORT",
+        "value": "5000"
+      },
+      {
+        "name": "HTTP_SERVER_TIMEOUT",
+        "value": "5s"
+      },
+      {
+        "name": "SERVICE_DATABASE_MAX_IDLE_CONNS",
+        "value": "10"
+      },
+      {
+        "name": "SERVICE_DATABASE_MAX_OPEN_CONNS",
+        "value": "10"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "SERVICE_DATABASE_DSN",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/budystcok-data-processor/SERVICE_DATABASE_DSN"
       }
     ],
     "logConfiguration": {

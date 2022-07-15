@@ -104,21 +104,25 @@ resource "aws_ecs_service" "service" {
     type  = "binpack"
     field = "memory"
   }
-  lifecycle {
-    ignore_changes = [task_definition]
-  }
+#  lifecycle {
+#    ignore_changes = [task_definition]
+#  }
 
   depends_on = [aws_ecs_task_definition.td]
 }
 
 resource "aws_ecs_task_definition" "td" {
-  family                = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+  family             = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+  task_role_arn      = aws_iam_role.task.arn
+  execution_role_arn = aws_iam_role.exec.arn
+  tags               = local.meta
+
   container_definitions = <<TASK_DEFINITION
 [
   {
     "cpu": 1,
     "image": "${local.meta.repository}",
-    "memory": 256,
+    "memory": 1024,
     "name": "${local.meta.service}",
     "networkMode": "bridge",
     "portMappings": [
@@ -143,6 +147,6 @@ TASK_DEFINITION
 
 resource "aws_cloudwatch_log_group" "log_group" {
   name = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
-
+  retention_in_days = 30
   tags = local.meta
 }

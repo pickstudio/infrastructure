@@ -113,6 +113,10 @@ resource "aws_ecs_service" "service" {
 
 resource "aws_ecs_task_definition" "td" {
   family                = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+  task_role_arn      = aws_iam_role.task.arn
+  execution_role_arn = aws_iam_role.exec.arn
+  tags               = local.meta
+
   container_definitions = <<TASK_DEFINITION
 [
   {
@@ -126,6 +130,34 @@ resource "aws_ecs_task_definition" "td" {
         "hostPort": 0,
         "protocol": "tcp",
         "containerPort": ${local.container_port}
+      }
+    ],
+    "environment": [
+      {
+        "name": "ENV",
+        "value": "development"
+      },
+      {
+        "name": "HTTP_SERVER_PORT",
+        "value": "5000"
+      },
+      {
+        "name": "HTTP_SERVER_TIMEOUT",
+        "value": "5s"
+      },
+      {
+        "name": "SERVICE_DATABASE_MAX_IDLE_CONNS",
+        "value": "10"
+      },
+      {
+        "name": "SERVICE_DATABASE_MAX_OPEN_CONNS",
+        "value": "10"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "SERVICE_DATABASE_DSN",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/budystcok-data-processor/SERVICE_DATABASE_DSN"
       }
     ],
     "logConfiguration": {
@@ -143,6 +175,6 @@ TASK_DEFINITION
 
 resource "aws_cloudwatch_log_group" "log_group" {
   name = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
-
+  retention_in_days = 30
   tags = local.meta
 }

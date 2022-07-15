@@ -1,45 +1,35 @@
+resource "aws_iam_role_policy" "task" {
+  name   = "${local.meta.team}_${local.meta.service}_${local.meta.env}_task"
+  role   = aws_iam_role.task.id
+  policy = data.aws_iam_policy_document.task.json
+}
 
-resource "aws_iam_role" "role" {
-  name = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
+resource "aws_iam_role" "task" {
+  name = "${local.meta.team}_${local.meta.service}_${local.meta.env}_task"
+  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
+}
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
+data "aws_iam_policy_document" "task" {
+
+  statement {
+    actions = [
+      "ec2:Describe*"
+    ]
+
+    resources = [
+      "*"
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "ecs_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
     }
-  ]
-}
-EOF
+  }
 }
 
-resource "aws_iam_policy" "policy" {
-  name        = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
-  description = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "ec2:Describe*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "attach" {
-  role       = aws_iam_role.role.name
-  policy_arn = aws_iam_policy.policy.arn
-}

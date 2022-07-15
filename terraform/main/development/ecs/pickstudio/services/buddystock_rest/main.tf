@@ -124,6 +124,7 @@ resource "aws_ecs_task_definition" "td" {
     "image": "${local.meta.repository}",
     "memory": 1024,
     "name": "${local.meta.service}",
+    "entryPoint": ["java", "-jar", "app.jar", "--spring.profiles.active=dev"],
     "networkMode": "bridge",
     "portMappings": [
       {

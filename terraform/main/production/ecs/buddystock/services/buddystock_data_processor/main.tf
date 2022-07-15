@@ -122,9 +122,10 @@ resource "aws_ecs_task_definition" "td" {
   {
     "cpu": 1,
     "image": "${local.meta.repository}",
-    "memory": 256,
+    "memory": 1024,
     "name": "${local.meta.service}",
     "networkMode": "bridge",
+    "entryPoint": ["/app/http_server"],
     "portMappings": [
       {
         "hostPort": 0,

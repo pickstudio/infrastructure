@@ -125,6 +125,7 @@ resource "aws_ecs_task_definition" "td" {
     "memory": 1024,
     "name": "${local.meta.service}",
     "networkMode": "bridge",
+    "entryPoint": ["java", "-jar", "app.jar", "--spring.profiles.active=dev"],
     "portMappings": [
       {
         "hostPort": 0,

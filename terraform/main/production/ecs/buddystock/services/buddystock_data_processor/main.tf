@@ -136,11 +136,11 @@ resource "aws_ecs_task_definition" "td" {
     "environment": [
       {
         "name": "ENV",
-        "value": "development"
+        "value": "${local.meta.env}"
       },
       {
         "name": "HTTP_SERVER_PORT",
-        "value": "5000"
+        "value": "${local.container_port}"
       },
       {
         "name": "HTTP_SERVER_TIMEOUT",

@@ -1,13 +1,13 @@
 locals {
   meta = {
-    team    = "buddystock",
-    service_queue = "queue"
+    team    = "platform",
+    service = "push_platform"
     env     = "development",
   }
 }
 
 resource "aws_sqs_queue" "queue" {
-  name                      = "${local.meta.team}-${local.meta.service_queue}-${local.meta.env}"
+  name                      = "${local.meta.service}_queue_${local.meta.env}"
   delay_seconds             = 90
   max_message_size          = 2048
   message_retention_seconds = 86400
@@ -22,23 +22,23 @@ resource "aws_sqs_queue" "queue" {
   })
 
   tags = {
-    Name        = "${local.meta.team}-${local.meta.service_queue}-${local.meta.env}"
-    Service     = local.meta.service_queue
+    Name        = "${local.meta.service}_queue_${local.meta.env}"
+    Service     = local.meta.service
     Environment = local.meta.env
     Team        = local.meta.team
   }
 }
 
 resource "aws_sqs_queue" "queue_deadletter" {
-  name                      = "${local.meta.team}-${local.meta.service_queue}-deadletter-${local.meta.env}"
+  name                      = "${local.meta.service}_deadletter_queue_${local.meta.env}"
   delay_seconds             = 90
   max_message_size          = 2048
   message_retention_seconds = 86400
   receive_wait_time_seconds = 10
 
   tags = {
-    Name        = "${local.meta.team}-${local.meta.service_queue}-${local.meta.env}"
-    Service     = local.meta.service_queue
+    Name        = "${local.meta.team}_deadletter_queue_${local.meta.env}"
+    Service     = local.meta.service
     Environment = local.meta.env
     Team        = local.meta.team
   }

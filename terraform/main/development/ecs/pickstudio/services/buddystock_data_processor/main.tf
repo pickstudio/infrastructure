@@ -143,11 +143,11 @@ resource "aws_ecs_task_definition" "td" {
     "environment": [
       {
         "name": "ENV",
-        "value": "development"
+        "value": "${local.meta.env}"
       },
       {
         "name": "HTTP_SERVER_PORT",
-        "value": "5000"
+        "value": "${local.container_port}"
       },
       {
         "name": "HTTP_SERVER_TIMEOUT",
@@ -165,7 +165,7 @@ resource "aws_ecs_task_definition" "td" {
     "secrets": [
       {
         "name": "SERVICE_DATABASE_DSN",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/budystcok-data-processor/SERVICE_DATABASE_DSN"
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_DSN"
       }
     ],
     "logConfiguration": {

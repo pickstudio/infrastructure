@@ -94,7 +94,7 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.tg.arn
-    container_name   = local.meta.service
+    container_name   = "${local.meta.service}_http"
     container_port   = local.container_port
   }
 
@@ -129,8 +129,8 @@ resource "aws_ecs_task_definition" "td" {
   {
     "cpu": 1,
     "image": "${local.meta.repository}",
-    "memory": 1024,
-    "name": "${local.meta.service}",
+    "memory": 512,
+    "name": "${local.meta.service}_http",
     "entryPoint": ["/app/http_server"],
     "networkMode": "bridge",
     "portMappings": [
@@ -176,6 +176,49 @@ resource "aws_ecs_task_definition" "td" {
         "awslogs-stream-prefix": "ecs"
       }
     }
+  },
+  {
+    "cpu": 1,
+    "image": "${local.meta.repository}",
+    "memory": 512,
+    "name": "${local.meta.service}_scheduler",
+    "entryPoint": ["python", "python/scheduler.py"],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group" : "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}",
+        "awslogs-region": "ap-northeast-2",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
+    "environment": [
+      {
+        "name": "ENV",
+        "value": "${local.meta.env}"
+      },
+      {
+        "name": "SERVICE_DATABASE_PORT",
+        "value": "3306"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "SERVICE_DATABASE_HOST",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_HOST"
+      },
+      {
+        "name": "SERVICE_DATABASE_USER",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_USER"
+      },
+      {
+        "name": "SERVICE_DATABASE_PASSWORD",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_PASSWORD"
+      },
+      {
+        "name": "SERVICE_DATABASE_DATABASE",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_DATABASE"
+      }
+    ]
   }
 ]
 TASK_DEFINITION

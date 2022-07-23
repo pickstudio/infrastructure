@@ -182,7 +182,7 @@ resource "aws_ecs_task_definition" "td" {
     "image": "${local.meta.repository}",
     "memory": 512,
     "name": "${local.meta.service}_scheduler",
-    "entryPoint": ["python", "python/scheduler.py"],
+    "entryPoint": ["python", "/app/python/scheduler.py"],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {

@@ -103,9 +103,9 @@ resource "aws_ecs_service" "service" {
     type  = "binpack"
     field = "memory"
   }
-#  lifecycle {
-#    ignore_changes = [task_definition]
-#  }
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 
   depends_on = [aws_ecs_task_definition.td]
 }
@@ -121,7 +121,7 @@ resource "aws_ecs_task_definition" "td" {
   {
     "cpu": 1,
     "image": "${local.meta.repository}",
-    "memory": 1024,
+    "memory": 512,
     "name": "${local.meta.service}",
     "command": ["yarn","start"],
     "portMappings": [

@@ -1,10 +1,10 @@
 locals {
   meta = {
     crew       = "pickstudio",
-    team       = "buddystock",
-    service    = "buddystock_data_processor"
+    team       = "dijkstra",
+    service    = "dijkstra_server"
     env        = "development",
-    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/buddystock/buddystock_data_processor:latest",
+    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/dijkstra/dijkstra_server:latest",
   }
 
   subnet_ids = [
@@ -18,16 +18,15 @@ locals {
   ]
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  lb_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
-
+  lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
   ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port     = 40003
-  service_tls_port = 40433
+  service_port = 23000
+  service_tls_port = 23431
 
-  container_port = 5000
+  container_port = 3000
   desired_count  = 1
 }
 
@@ -43,23 +42,6 @@ resource "aws_lb_listener" "listener" {
       protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
-  }
-
-  tags = local.meta
-}
-
-resource "aws_lb_target_group" "tg" {
-  target_type = "instance"
-  port        = local.container_port
-  protocol    = "HTTP"
-  vpc_id      = local.vpc_id
-
-  health_check {
-    protocol            = "HTTP"
-    path                = "/"
-    healthy_threshold   = 5
-    unhealthy_threshold = 2
-    interval            = 30
   }
 }
 
@@ -79,7 +61,21 @@ resource "aws_lb_listener" "listener_tls" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg.arn
   }
-  tags = local.meta
+}
+
+resource "aws_lb_target_group" "tg" {
+  target_type = "instance"
+  port        = local.container_port
+  protocol    = "HTTP"
+  vpc_id      = local.vpc_id
+
+  health_check {
+    protocol = "HTTP"
+    path = "/"
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    interval = 30
+  }
 }
 
 resource "aws_ecs_service" "service" {
@@ -94,7 +90,7 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.tg.arn
-    container_name   = "${local.meta.service}_http"
+    container_name   = local.meta.service
     container_port   = local.container_port
   }
 
@@ -114,10 +110,6 @@ resource "aws_ecs_service" "service" {
   depends_on = [aws_ecs_task_definition.td]
 }
 
-data "aws_iam_role" "exec" {
-  name = "ecsTaskExecutionRole"
-}
-
 resource "aws_ecs_task_definition" "td" {
   family             = "${local.meta.team}_${local.meta.service}_${local.meta.env}"
   task_role_arn      = aws_iam_role.task.arn
@@ -129,10 +121,9 @@ resource "aws_ecs_task_definition" "td" {
   {
     "cpu": 1,
     "image": "${local.meta.repository}",
-    "memory": 256,
-    "name": "${local.meta.service}_http",
-    "entryPoint": ["/app/http_server"],
-    "networkMode": "bridge",
+    "memory": 512,
+    "name": "${local.meta.service}",
+    "command": ["yarn","start:prod"],
     "portMappings": [
       {
         "hostPort": 0,
@@ -140,49 +131,6 @@ resource "aws_ecs_task_definition" "td" {
         "containerPort": ${local.container_port}
       }
     ],
-    "environment": [
-      {
-        "name": "ENV",
-        "value": "${local.meta.env}"
-      },
-      {
-        "name": "HTTP_SERVER_PORT",
-        "value": "${local.container_port}"
-      },
-      {
-        "name": "HTTP_SERVER_TIMEOUT",
-        "value": "5s"
-      },
-      {
-        "name": "SERVICE_DATABASE_MAX_IDLE_CONNS",
-        "value": "10"
-      },
-      {
-        "name": "SERVICE_DATABASE_MAX_OPEN_CONNS",
-        "value": "10"
-      }
-    ],
-    "secrets": [
-      {
-        "name": "SERVICE_DATABASE_DSN",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_DSN"
-      }
-    ],
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group" : "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}",
-        "awslogs-region": "ap-northeast-2",
-        "awslogs-stream-prefix": "ecs"
-      }
-    }
-  },
-  {
-    "cpu": 1,
-    "image": "${local.meta.repository}",
-    "memory": 256,
-    "name": "${local.meta.service}_scheduler",
-    "entryPoint": ["python", "/app/python/scheduler.py"],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
@@ -194,29 +142,41 @@ resource "aws_ecs_task_definition" "td" {
     "environment": [
       {
         "name": "ENV",
-        "value": "${local.meta.env}"
-      },
-      {
-        "name": "SERVICE_DATABASE_PORT",
-        "value": "3306"
+        "value": "dev"
       }
     ],
     "secrets": [
       {
-        "name": "SERVICE_DATABASE_HOST",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_HOST"
+        "name": "DB_HOST",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_HOST"
       },
       {
-        "name": "SERVICE_DATABASE_USER",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_USER"
+        "name": "DB_PORT",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_PORT"
       },
       {
-        "name": "SERVICE_DATABASE_PASSWORD",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_PASSWORD"
+        "name": "DB_USERNAME",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_USERNAME"
       },
       {
-        "name": "SERVICE_DATABASE_DATABASE",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/buddystock-data-processor/SERVICE_DATABASE_DATABASE"
+        "name": "DB_PASSWORD",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_PASSWORD"
+      },
+      {
+        "name": "DB_DATABASE",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_DATABASE"
+      },
+      {
+        "name": "JWT_SECRET",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/JWT_SECRET"
+      },
+      {
+        "name": "KAKAO_ID",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/KAKAO_ID"
+      },
+      {
+        "name": "KAKAO_CALLBACK_URL",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/KAKAO_CALLBACK_URL"
       }
     ]
   }
@@ -226,6 +186,6 @@ TASK_DEFINITION
 
 resource "aws_cloudwatch_log_group" "log_group" {
   name = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
-
+  retention_in_days = 30
   tags = local.meta
 }

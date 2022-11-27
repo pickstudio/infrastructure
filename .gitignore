@@ -1,7 +1,7 @@
 .idea
 .envrc
 .terraform
-
+.infracost
 
 .DS_Store
 

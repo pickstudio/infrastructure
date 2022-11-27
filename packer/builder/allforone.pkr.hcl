@@ -30,7 +30,7 @@ aws ssm get-parameters \
   availability_zone           = "ap-northeast-2a"
 
   launch_block_device_mappings {
-    device_name           = "/dev/sda1"
+    device_name           = "/dev/xvda"
     delete_on_termination = true
     volume_size           = 40
     volume_type           = "gp3"

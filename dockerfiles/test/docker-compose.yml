@@ -1,0 +1,52 @@
+services:
+  # https://grafana.com/orgs/drakejin
+  monitoring_grafana:
+    platform: linux/x86_64
+    image: grafana/grafana-oss
+    container_name: monitoring_grafana
+    ports:
+      - "33000:3000"
+    volumes:
+      - ../grafana/9.2.6/defaults.ini:/usr/share/grafana/conf/defaults.ini
+    environment:
+      - SERVER_PORT=3000
+      - SERVER_DSN=http://localhost:33000
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - DATABASE_DSN=mysql://admin:password@monitoring_database:3306/grafana
+    depends_on:
+      - monitoring_database
+      - monitoring_prometheus
+
+
+  # https://danawalab.github.io/common/2020/03/16/Common-Prometheus.html
+  monitoring_prometheus:
+    image: prom/prometheus:v2.40.3
+    container_name: monitoring_prometheus
+    ports:
+      - "39099:9099"
+    command:
+      - '--web.listen-address=0.0.0.0:9099'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+
+  monitoring_alertmanager:
+    image: prom/alertmanager:v0.24.0
+    container_name: monitoring_alertmanager
+
+
+  monitoring_database:
+    platform: linux/x86_64
+    image: mysql:8.0.28
+    container_name: monitoring_database
+    ports:
+      - "33306:3306"
+    environment:
+      - MYSQL_DATABASE=grafana
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password

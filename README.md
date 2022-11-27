@@ -30,6 +30,13 @@ $ terraform apply
 # Do yes or No
 ```
 
+### infracost
+
+```
+brew install infracost
+
+```
+
 # service host information
 - buddystock_rest
     - development: https://development.pickstudio.io:40431

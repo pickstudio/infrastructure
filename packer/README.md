@@ -3,8 +3,16 @@
 
 # usage
 
+### install packer
 ``` bash
-packer build ./builder/ecs.pkr.hcl
+brew tap hashicorp/tap
+brew install hashicorp/tap/packer@v1.7.10
+```
+
+### build
+``` bash
 packer fmt ./builder/ecs.pkr.hcl
+packer validate ./builder/ecs.pkr.hcl
+packer build ./builder/ecs.pkr.hcl
 
 ```

@@ -1,0 +1,69 @@
+server:
+  log_level: debug
+
+metrics:
+  global:
+    scrape_interval: 60s
+    remote_write:
+      - url: ${REMOTE_WRITE_PROM_PUSH_DSN}
+        basic_auth:
+          username: ${REMOTE_WRITE_PROM_PUSH_DSN_USERNAME}
+          password: ${REMOTE_WRITE_PROM_PUSH_DSN_PASSWORD}
+
+  configs:
+    - name: default
+      scrape_configs:
+      - job_name: self-scrape
+        static_configs: # https://github.com/signal-ai/prometheus-ecs-sd
+          - targets: [ 'localhost:9090' ]
+            labels:
+              process: 'agent'
+
+logs:
+  configs:
+    - name: default
+      clients:
+        - url: ${REMOTE_WRITE_LOKI_PUSH_DSN}
+          basic_auth:
+            username: ${REMOTE_WRITE_LOKI_PUSH_DSN_USERNAME}
+            password: ${REMOTE_WRITE_LOKI_PUSH_DSN_PASSWORD}
+      positions:
+        filename: /tmp/positions.yaml
+      scrape_configs:
+        - job_name: varlogs
+          static_configs:
+            - targets: [ localhost ]
+              labels:
+                job: varlogs
+                __path__: /var/log/*log
+        - job_name: dmesg
+          static_configs:
+            - targets: [localhost]
+              labels:
+                job: dmesg
+                __path__: /var/log/dmesg
+
+traces:
+  configs:
+    - name: default
+      remote_write:
+        - endpoint: ${REMOTE_WRITE_TEMPO_PUSH_DSN}
+          basic_auth:
+            username: ${REMOTE_WRITE_TEMPO_PUSH_USERNAME}
+            password: ${REMOTE_WRITE_TEMPO_PUSH_PASSWORD}
+      receivers:
+        jaeger:
+          protocols:
+            thrift_http:
+            thrift_compact:
+
+integrations:
+  node_exporter:
+
+  # agent
+  agent:
+    extra_labels:
+      cluster: ${CLUSTER_NAME}
+      namespace: ${NAMESPACE_NAME}
+      container: grafana-agent
+      pod: grafana-agent

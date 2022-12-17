@@ -57,8 +57,8 @@ resource "aws_lb_target_group" "tg" {
   health_check {
     protocol            = "HTTP"
     path                = "/"
-    healthy_threshold   = 5
-    unhealthy_threshold = 2
+    healthy_threshold   = 2
+    unhealthy_threshold = 5
     interval            = 30
   }
 }

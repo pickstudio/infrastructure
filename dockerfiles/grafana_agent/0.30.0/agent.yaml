@@ -13,12 +13,15 @@ metrics:
   configs:
     - name: default
       scrape_configs:
-      - job_name: self-scrape
-        static_configs: # https://github.com/signal-ai/prometheus-ecs-sd
-          - targets: [ 'localhost:9090' ]
-            labels:
-              process: 'agent'
-
+        - job_name: ecs
+          file_sd_configs:
+            - files:
+                - ${CONFIG_DISCOVERY_YAML}
+              refresh_interval: 1m
+          # Drop unwanted labels using the labeldrop action
+          metric_relabel_configs:
+            - regex: task_arn
+              action: labeldrop
 logs:
   configs:
     - name: default

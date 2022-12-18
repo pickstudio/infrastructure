@@ -1,6 +1,10 @@
-FROM grafana/agent:v0.30.0-rc.0
+FROM 755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/infrastructure/prometheus-ecs-discovery:latest AS DISCOVERY
+FROM grafana/agent:v0.30.0-rc.0 AS AGENT
+COPY --from=DISCOVERY /bin/prometheus-ecs-discovery /bin/
+
+WORKDIR /etc/agent
 
 COPY ./agent.yaml /etc/agent/agent.yaml
+COPY ./entrypoint.sh ./entrypoint.sh
 
-# https://github.com/signal-ai/prometheus-ecs-sd
-# TODO: 설치해서 같이 돌릴 수 있도록.
+ENTRYPOINT /etc/agent/entrypoint.sh

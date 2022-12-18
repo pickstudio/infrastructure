@@ -9,25 +9,25 @@ services:
       - "12345:12345" # agent
       - "12346:12346" # grpc
       - "8500:8500" # consul
-    entrypoint:
-      - /bin/agent
-      - -enable-features=integrations-next
-      - -config.file=/etc/agent/agent.yaml
-      - -config.enable-read-api
-      - -config.expand-env
-#    entrypoint: "tail -f /dev/null"
     environment:
-      REMOTE_WRITE_PROM_PUSH_DSN: https://prometheus-prod-18-prod-ap-southeast-0.grafana.net/api/prom/push
-      REMOTE_WRITE_PROM_PUSH_DSN_USERNAME: 668191
-      REMOTE_WRITE_PROM_PUSH_DSN_PASSWORD: ZX4Qi6z6
-
-      REMOTE_WRITE_TEMPO_PUSH_DSN: https://logs-prod-011.grafana.net/loki/api/v1/push
-      REMOTE_WRITE_TEMPO_PUSH_USERNAME: 333066
-      REMOTE_WRITE_TEMPO_PUSH_PASSWORD: 2fsgFBoZ
-
-      REMOTE_WRITE_LOKI_PUSH_DSN: https://tempo-prod-07-prod-ap-southeast-0.grafana.net
-      REMOTE_WRITE_LOKI_PUSH_USERNAME: 329579
-      REMOTE_WRITE_LOKI_PUSH_PASSWORD: JX2jTkig
-
       CLUSTER_NAME: pickstudio
       NAMESPACE_NAME: grafana
+
+      CONFIG_DISCOVERY_YAML: /etc/agent/ecs_file_sd.yml
+
+      AWS_REGION: ${AWS_REGION}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+      REMOTE_WRITE_PROM_PUSH_DSN: ${REMOTE_WRITE_PROM_PUSH_DSN}
+      REMOTE_WRITE_PROM_PUSH_DSN_USERNAME: ${REMOTE_WRITE_PROM_PUSH_DSN_USERNAME}
+      REMOTE_WRITE_PROM_PUSH_DSN_PASSWORD: ${REMOTE_WRITE_PROM_PUSH_DSN_PASSWORD}
+
+      REMOTE_WRITE_TEMPO_PUSH_DSN: ${REMOTE_WRITE_TEMPO_PUSH_DSN}
+      REMOTE_WRITE_TEMPO_PUSH_USERNAME: ${REMOTE_WRITE_TEMPO_PUSH_USERNAME}
+      REMOTE_WRITE_TEMPO_PUSH_PASSWORD: ${REMOTE_WRITE_TEMPO_PUSH_PASSWORD}
+
+      REMOTE_WRITE_LOKI_PUSH_DSN: ${REMOTE_WRITE_LOKI_PUSH_DSN}
+      REMOTE_WRITE_LOKI_PUSH_USERNAME: ${REMOTE_WRITE_LOKI_PUSH_USERNAME}
+      REMOTE_WRITE_LOKI_PUSH_PASSWORD: ${REMOTE_WRITE_LOKI_PUSH_PASSWORD}

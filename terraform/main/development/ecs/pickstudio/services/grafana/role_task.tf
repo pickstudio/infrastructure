@@ -13,7 +13,16 @@ data "aws_iam_policy_document" "task" {
 
   statement {
     actions = [
-      "ec2:Describe*"
+      "ec2:Describe*",
+      "ec2:DescribeInstances",
+
+      "ecs:ListClusters",
+      "ecs:ListTasks",
+      "ecs:DescribeTask",
+      "ecs:DescribeContainerInstances",
+      "ecs:DescribeTasks",
+      "ecs:DescribeTaskDefinition",
+      "ecs:DescribeClusters",
     ]
 
     resources = [

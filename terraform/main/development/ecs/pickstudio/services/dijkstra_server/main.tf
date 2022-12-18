@@ -27,7 +27,7 @@ locals {
   service_tls_port = 23431
 
   container_port = 3000
-  desired_count  = 1
+  desired_count  = 0
 }
 
 resource "aws_lb_listener" "listener" {

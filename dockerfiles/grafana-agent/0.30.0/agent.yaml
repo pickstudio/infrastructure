@@ -7,8 +7,8 @@ metrics:
     remote_write:
       - url: ${REMOTE_WRITE_PROM_PUSH_DSN}
         basic_auth:
-          username: ${REMOTE_WRITE_PROM_PUSH_DSN_USERNAME}
-          password: ${REMOTE_WRITE_PROM_PUSH_DSN_PASSWORD}
+          username: ${REMOTE_WRITE_PROM_PUSH_USERNAME}
+          password: ${REMOTE_WRITE_PROM_PUSH_PASSWORD}
 
   configs:
     - name: default
@@ -28,8 +28,8 @@ logs:
       clients:
         - url: ${REMOTE_WRITE_LOKI_PUSH_DSN}
           basic_auth:
-            username: ${REMOTE_WRITE_LOKI_PUSH_DSN_USERNAME}
-            password: ${REMOTE_WRITE_LOKI_PUSH_DSN_PASSWORD}
+            username: ${REMOTE_WRITE_LOKI_PUSH_USERNAME}
+            password: ${REMOTE_WRITE_LOKI_PUSH_PASSWORD}
       positions:
         filename: /tmp/positions.yaml
       scrape_configs:

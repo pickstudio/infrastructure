@@ -1,10 +1,10 @@
 locals {
   meta = {
     crew       = "pickstudio",
-    team       = "dijkstra",
-    service    = "dijkstra_server"
+    team       = "infrastructure",
+    service    = "grafana_agent"
     env        = "development",
-    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/dijkstra/dijkstra_server:latest",
+    repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/infrastructure/grafana-agent:latest",
   }
 
   subnet_ids = [
@@ -22,82 +22,17 @@ locals {
   ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
-
-  service_port = 23000
-  service_tls_port = 23431
-
-  container_port = 3000
-  desired_count  = 1
 }
 
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = local.lb_id
-  port              = local.service_port
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-    redirect {
-      port        = local.service_tls_port
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-
-data "aws_acm_certificate" "acm" {
-  domain   = "*.pickstudio.io"
-  statuses = ["ISSUED"]
-}
-
-resource "aws_lb_listener" "listener_tls" {
-  load_balancer_arn = local.lb_id
-  port              = local.service_tls_port
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.aws_acm_certificate.acm.arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.tg.arn
-  }
-}
-
-resource "aws_lb_target_group" "tg" {
-  target_type = "instance"
-  port        = local.container_port
-  protocol    = "HTTP"
-  vpc_id      = local.vpc_id
-
-  health_check {
-    protocol = "HTTP"
-    path = "/"
-    healthy_threshold = 5
-    unhealthy_threshold = 2
-    interval = 30
-  }
-}
 
 resource "aws_ecs_service" "service" {
   name                               = local.meta.service
   cluster                            = local.ecs_cluster_id
-  desired_count                      = local.desired_count
-  deployment_minimum_healthy_percent = 0
-  deployment_maximum_percent         = 100
+  desired_count                      = 1
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
   task_definition                    = aws_ecs_task_definition.td.arn
   scheduling_strategy                = "REPLICA"
-
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.tg.arn
-    container_name   = local.meta.service
-    container_port   = local.container_port
-  }
-
-  placement_constraints {
-    type       = "memberOf"
-    expression = "attribute:ecs.availability-zone in [${local.az_a}, ${local.az_d}]"
-  }
 
   ordered_placement_strategy {
     type  = "binpack"
@@ -123,14 +58,6 @@ resource "aws_ecs_task_definition" "td" {
     "image": "${local.meta.repository}",
     "memory": 512,
     "name": "${local.meta.service}",
-    "command": ["yarn","start:prod"],
-    "portMappings": [
-      {
-        "hostPort": 0,
-        "protocol": "tcp",
-        "containerPort": ${local.container_port}
-      }
-    ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
@@ -141,42 +68,60 @@ resource "aws_ecs_task_definition" "td" {
     },
     "environment": [
       {
-        "name": "ENV",
-        "value": "dev"
+        "name": "AWS_REGION",
+        "value": "ap-northeast-2"
+      },
+      {
+        "name": "CLUSTER_NAME",
+        "value": "pickstudio"
+      },
+      {
+        "name": "NAMESPACE_NAME",
+        "value": "grafana"
+      },
+      {
+        "name": "CONFIG_DISCOVERY_YAML",
+        "value": "/etc/agent/ecs_file_sd.yml"
       }
     ],
     "secrets": [
       {
-        "name": "DB_HOST",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_HOST"
+        "name": "REMOTE_WRITE_PROM_PUSH_DSN",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_PROM_PUSH_DSN"
       },
       {
-        "name": "DB_PORT",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_PORT"
+        "name": "REMOTE_WRITE_PROM_PUSH_USERNAME",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_PROM_PUSH_USERNAME"
       },
       {
-        "name": "DB_USERNAME",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_USERNAME"
+        "name": "REMOTE_WRITE_PROM_PUSH_PASSWORD",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_PROM_PUSH_PASSWORD"
+      },
+
+      {
+        "name": "REMOTE_WRITE_LOKI_PUSH_DSN",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_LOKI_PUSH_DSN"
       },
       {
-        "name": "DB_PASSWORD",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_PASSWORD"
+        "name": "REMOTE_WRITE_LOKI_PUSH_USERNAME",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_LOKI_PUSH_USERNAME"
       },
       {
-        "name": "DB_DATABASE",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/DB_DATABASE"
+        "name": "REMOTE_WRITE_LOKI_PUSH_PASSWORD",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_LOKI_PUSH_PASSWORD"
+      },
+
+      {
+        "name": "REMOTE_WRITE_TEMPO_PUSH_DSN",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_TEMPO_PUSH_DSN"
       },
       {
-        "name": "JWT_SECRET",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/JWT_SECRET"
+        "name": "REMOTE_WRITE_TEMPO_PUSH_USERNAME",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_TEMPO_PUSH_USERNAME"
       },
       {
-        "name": "KAKAO_ID",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/KAKAO_ID"
-      },
-      {
-        "name": "KAKAO_CALLBACK_URL",
-        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/KAKAO_CALLBACK_URL"
+        "name": "REMOTE_WRITE_TEMPO_PUSH_PASSWORD",
+        "valueFrom": "arn:aws:ssm:ap-northeast-2:755991664675:parameter/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}/REMOTE_WRITE_TEMPO_PUSH_PASSWORD"
       }
     ]
   }

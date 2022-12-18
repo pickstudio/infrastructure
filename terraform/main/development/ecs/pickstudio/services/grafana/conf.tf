@@ -5,7 +5,7 @@ terraform {
     region = "ap-northeast-2"
 
     bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/development/ecs/pickstudio/services/dijkstra_server"
+    key     = "terraform/v1/development/ecs/pickstudio/services/grafana"
     encrypt = true
 
     dynamodb_table = "pickstudio-terraform-lock"

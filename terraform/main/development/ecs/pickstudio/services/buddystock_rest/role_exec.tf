@@ -43,11 +43,12 @@ data "aws_iam_policy_document" "exec" {
       "*"
     ]
   }
-
   statement {
     actions = [
-      "ssm:GetParameter",
-      "ssm:GetParameters"
+      "ssm:Describe*",
+      "ssm:Get*",
+      "ssm:List*",
+      "secretsmanager:*"
     ]
 
     resources = [

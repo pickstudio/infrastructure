@@ -133,6 +133,9 @@ resource "aws_ecs_task_definition" "td" {
         "containerPort": ${local.container_port}
       }
     ],
+    "dockerLabels": {
+      "PROMETHEUS_EXPORTER_PORT": "${local.container_port}"
+    },
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
@@ -140,7 +143,77 @@ resource "aws_ecs_task_definition" "td" {
         "awslogs-region": "ap-northeast-2",
         "awslogs-stream-prefix": "ecs"
       }
-    }
+    },
+    "secrets": [
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:development/redis_host-sJYuz8",
+        "name": "DEV_REDIS_HOST"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:development/datasource_url-U6aFr6",
+        "name": "DEV_DATASOURCE_URL"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:development/datasource_username-i0yDPN",
+        "name": "DEV_DATASOURCE_USERNAME"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:development/datasource_password-vvm6XC",
+        "name": "DEV_DATASOURCE_PASSWORD"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:production/redis_host-AcWroY",
+        "name": "PROD_REDIS_HOST"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:production/datasource_url-3PBYQN",
+        "name": "PROD_DATASOURCE_URL"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:production/datasource_username-M16nN4",
+        "name": "PROD_DATASOURCE_USERNAME"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:production/datasource_password-fSAEiu",
+        "name": "PROD_DATASOURCE_PASSWORD"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:development/youtube/apikey-V0JXlK",
+        "name": "YOUTUBE_SUBSCRIPTION_APIKEY"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:nhn/sms/appkey-PUGzeZ",
+        "name": "NHN_SMS_APPKEY"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:nhn/sms/secret-VuiTeA",
+        "name": "NHN_SMS_SECRET"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:nhn/sms/sendno-6pXDnc",
+        "name": "NHN_SMS_SENDNO"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:JWT_SECRET-y7z4bL",
+        "name": "JWT_SECRET"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:production/firebase_secret_key-PyLlSB",
+        "name": "PROD_FIREBASE_SECRET_KEY"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:development/firebase_secret_key-RDhXGS",
+        "name": "DEV_FIREBASE_SECRET_KEY"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:google_client_id-EEeVlq",
+        "name": "GOOGLE_CLIENT_ID"
+      },
+      {
+        "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:755991664675:secret:google_client_secret-mVynFx",
+        "name": "GOOGLE_CLIENT_SECRET"
+      }
+    ]
   }
 ]
 TASK_DEFINITION

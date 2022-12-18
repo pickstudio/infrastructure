@@ -133,6 +133,9 @@ resource "aws_ecs_task_definition" "td" {
         "containerPort": ${local.container_port}
       }
     ],
+    "dockerLabels": {
+      "PROMETHEUS_EXPORTER_PORT": "${local.container_port}"
+    },
     "environment": [
       {
         "name": "ENV",

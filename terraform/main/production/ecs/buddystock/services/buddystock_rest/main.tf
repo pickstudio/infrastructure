@@ -24,26 +24,10 @@ locals {
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 
-  service_port = 40001
-  service_tls_port = 40431
+  service_port = 40431
 
   container_port = 8080
   desired_count  = 1
-}
-
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = local.lb_id
-  port              = local.service_port
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-    redirect {
-      port        = local.service_tls_port
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
 }
 
 data "aws_acm_certificate" "acm" {
@@ -53,7 +37,7 @@ data "aws_acm_certificate" "acm" {
 
 resource "aws_lb_listener" "listener_tls" {
   load_balancer_arn = local.lb_id
-  port              = local.service_tls_port
+  port              = local.service_port
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = data.aws_acm_certificate.acm.arn
@@ -104,9 +88,10 @@ resource "aws_ecs_service" "service" {
     type  = "binpack"
     field = "memory"
   }
-#  lifecycle {
-#    ignore_changes = [task_definition]
-#  }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 
   depends_on = [aws_ecs_task_definition.td]
 }

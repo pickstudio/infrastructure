@@ -18,7 +18,7 @@ locals {
   ]
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
+  lb_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
 
   ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
@@ -55,11 +55,11 @@ resource "aws_lb_target_group" "tg" {
   vpc_id      = local.vpc_id
 
   health_check {
-    protocol = "HTTP"
-    path = "/health"
-    healthy_threshold = 2
+    protocol            = "HTTP"
+    path                = "/health"
+    healthy_threshold   = 2
     unhealthy_threshold = 5
-    interval = 30
+    interval            = 30
   }
 }
 
@@ -204,7 +204,7 @@ TASK_DEFINITION
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
+  name              = "/ecs/${local.meta.env}/${local.meta.team}/${local.meta.service}"
   retention_in_days = 30
-  tags = local.meta
+  tags              = local.meta
 }

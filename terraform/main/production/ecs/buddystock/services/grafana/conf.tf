@@ -5,7 +5,7 @@ terraform {
     region = "ap-northeast-2"
 
     bucket  = "pickstudio-infrastructure"
-    key     = "terraform/v1/production/ecs/buddystock"
+    key     = "terraform/v1/production/ecs/buddystock/services/grafana"
     encrypt = true
 
     dynamodb_table = "pickstudio-terraform-lock"
@@ -44,6 +44,31 @@ data "terraform_remote_state" "subnet_public" {
     encrypt = true
   }
 }
+
+
+data "terraform_remote_state" "production_ecs_buddystock" {
+  backend = "s3"
+
+  config = {
+    bucket  = "pickstudio-infrastructure"
+    key     = "terraform/v1/production/ecs/buddystock"
+    region  = "ap-northeast-2"
+    encrypt = true
+  }
+}
+
+
+data "terraform_remote_state" "production_lb_buddystock" {
+  backend = "s3"
+
+  config = {
+    bucket = "pickstudio-infrastructure"
+    key   = "terraform/v1/production/lb/buddystock"
+    region = "ap-northeast-2"
+    encrypt = true
+  }
+}
+
 
 data "aws_availability_zone" "a" {
   name = "ap-northeast-2a"

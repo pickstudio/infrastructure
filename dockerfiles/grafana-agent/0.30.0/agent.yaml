@@ -17,11 +17,22 @@ metrics:
           file_sd_configs:
             - files:
                 - ${CONFIG_DISCOVERY_YAML}
-              refresh_interval: 1m
+              refresh_interval: 5s
           # Drop unwanted labels using the labeldrop action
           metric_relabel_configs:
             - regex: task_arn
               action: labeldrop
+
+        - job_name: buddystock_api_server
+          metrics_path: '/actuator/prometheus'
+          file_sd_configs:
+            - files:
+                - ${CONFIG_DISCOVERY_YAML}
+              refresh_interval: 5s
+          metric_relabel_configs:
+            - regex: task_arn
+              action: labeldrop
+
 logs:
   configs:
     - name: default

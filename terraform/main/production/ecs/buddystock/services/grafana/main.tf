@@ -3,7 +3,7 @@ locals {
     crew       = "pickstudio",
     team       = "infrastructure",
     service    = "grafana_agent"
-    env        = "development",
+    env        = "production",
     repository = "755991664675.dkr.ecr.ap-northeast-2.amazonaws.com/infrastructure/grafana-agent:latest",
   }
 
@@ -18,8 +18,8 @@ locals {
   ]
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  lb_id          = data.terraform_remote_state.development_ecs_pickstudio.outputs.lb_id
-  ecs_cluster_id = data.terraform_remote_state.development_ecs_pickstudio.outputs.ecs_id
+  lb_id          = data.terraform_remote_state.production_lb_buddystock.outputs.lb_id
+  ecs_cluster_id = data.terraform_remote_state.production_ecs_buddystock.outputs.ecs_id
   az_a           = data.aws_availability_zone.a.name
   az_d           = data.aws_availability_zone.d.name
 }
@@ -127,3 +127,9 @@ resource "aws_cloudwatch_log_group" "log_group" {
   retention_in_days = 30
   tags = local.meta
 }
+
+
+aws ssm get-parameters-by-path --path "/ecs/production/infrastructure/grafana_agent/" --recursive --with-decryption \
+| jq -crM '.Parameters | map( [.Name, .Value] | join("  =>  ")) | .[]' \
+| sort \
+| head
